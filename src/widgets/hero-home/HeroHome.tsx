@@ -1,4 +1,5 @@
 import { HOME_IMAGES, ROUTES } from '@/shared/constants';
+import { formatCompact } from '@/shared/lib';
 
 interface HeroStats {
   universes: number;
@@ -19,11 +20,6 @@ const defaultStats: HeroStats = {
   users: 45000,
   theories: 3200,
 };
-
-function formatCompact(value: number): string {
-  if (value >= 1000) return `${Math.round(value / 1000)}K+`;
-  return `${value}+`;
-}
 
 function StatIcon({ type }: { type: 'articles' | 'universes' | 'characters' | 'users' }) {
   const common = {
@@ -95,7 +91,7 @@ export function HeroHome({ stats = defaultStats }: HeroHomeProps) {
         <div className="mt-7 flex flex-wrap gap-3">
           <a
             href={ROUTES.UNIVERSES}
-            className="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white shadow-lg shadow-geek-accent/25 transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent"
+            className="btn-primary"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
               <circle cx="12" cy="12" r="5" />
@@ -106,7 +102,7 @@ export function HeroHome({ stats = defaultStats }: HeroHomeProps) {
           </a>
           <a
             href={ROUTES.CREATE_ARTICLE}
-            className="inline-flex h-11 items-center gap-2 rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent"
+            className="btn-secondary"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
               <path d="M12 5v14M5 12h14" />
@@ -123,7 +119,7 @@ export function HeroHome({ stats = defaultStats }: HeroHomeProps) {
               </span>
               <span className="min-w-0">
                 <span className="block font-mono text-sm font-bold text-white" aria-label={`${item.label}: ${item.value.toLocaleString('es-ES')}`}>
-                  {formatCompact(item.value)}
+                  {formatCompact(item.value)}+
                 </span>
                 <span className="block truncate text-xs leading-tight text-geek-text-secondary">{item.label}</span>
               </span>

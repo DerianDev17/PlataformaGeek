@@ -6,6 +6,7 @@ export type TheoryStatus = 'open' | 'debated' | 'confirmed' | 'rejected';
 export interface Theory {
   id: string;
   title: string;
+  slug: string;
   content: string;
   status: TheoryStatus;
   votes: number;

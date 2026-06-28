@@ -1,4 +1,5 @@
 import { ROUTES } from '@/shared/constants';
+import { formatCompact, formatDate } from '@/shared/lib';
 
 interface ArticleItem {
   id: string;
@@ -58,15 +59,6 @@ const statusLabels: Record<string, string> = {
   confirmed: 'Confirmada',
   rejected: 'Descartada',
 };
-
-function formatCompact(value: number): string {
-  if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
-  return value.toString();
-}
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value));
-}
 
 export function UniverseDetail({ universe, loading }: UniverseDetailProps) {
   if (loading) {

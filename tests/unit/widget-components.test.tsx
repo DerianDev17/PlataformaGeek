@@ -1,46 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Badge } from '@/shared/ui';
-import { StatsBanner } from '@/widgets/stats-banner/StatsBanner';
 import { HeroHome } from '@/widgets/hero-home/HeroHome';
 
 describe('Widget Components', () => {
-  describe('StatsBanner', () => {
-    const mockStats = {
-      universes: 1,
-      articles: 2,
-      characters: 3,
-      users: 4,
-      theories: 5,
-    };
-
-    it('renderiza las 5 categorias de estadisticas', () => {
-      render(<StatsBanner stats={mockStats} />);
-      expect(screen.getByText('Universos')).toBeInTheDocument();
-      expect(screen.getByText(/Art/i)).toBeInTheDocument();
-      expect(screen.getByText('Personajes')).toBeInTheDocument();
-      expect(screen.getByText('Usuarios')).toBeInTheDocument();
-      expect(screen.getByText(/Teor/i)).toBeInTheDocument();
-    });
-
-    it('los iconos tienen aria-hidden="true"', () => {
-      const { container } = render(<StatsBanner stats={mockStats} />);
-      expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThanOrEqual(5);
-    });
-
-    it('los valores tienen aria-label con formato "label: value"', () => {
-      render(<StatsBanner stats={mockStats} />);
-      const value = screen.getByLabelText(/^Universos:/);
-      expect(value).toBeInTheDocument();
-    });
-
-    it('renderiza contenedor con grid layout', () => {
-      const { container } = render(<StatsBanner stats={mockStats} />);
-      const section = container.querySelector('section');
-      expect(section?.className).toContain('grid');
-    });
-  });
-
   describe('HeroHome', () => {
     it('renderiza un heading principal accesible', () => {
       render(<HeroHome />);

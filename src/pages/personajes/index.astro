@@ -1,5 +1,5 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import {
   CHARACTER_RELATIONS,
   FALLBACK_CHARACTERS,
@@ -8,7 +8,7 @@ import {
   normalizeCharacterForShowcase,
 } from '@/shared/constants';
 
-const response = await fetch('http://localhost:4321/api/characters?limit=50').catch(() => null);
+const response = await fetch(apiUrl('/characters?limit=50')).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const apiCharacters = Array.isArray(json?.data?.data) ? json.data.data : [];
 const normalizedApiCharacters = apiCharacters.map((character: any, index: number) => normalizeCharacterForShowcase(character, index));
@@ -62,7 +62,7 @@ const totalArticles = characters.reduce((sum, character) => sum + character.arti
         <div class="mt-7 flex flex-wrap gap-3">
           <a
             href="#catalogo"
-            class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent"
+            class="btn-primary"
           >
             Ver catalogo
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -71,7 +71,7 @@ const totalArticles = characters.reduce((sum, character) => sum + character.arti
           </a>
           <a
             href={ROUTES.UNIVERSES}
-            class="inline-flex h-11 items-center rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent"
+            class="btn-secondary"
           >
             Cruzar universos
           </a>

@@ -1,8 +1,8 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { COLLABORATOR_PROFILES, HOME_IMAGES, RANKING_TIERS, ROUTES } from '@/shared/constants';
 
-const response = await fetch('http://localhost:4321/api/users/ranking').catch(() => null);
+const response = await fetch(apiUrl('/users/ranking')).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const users = json?.data || [];
 const rankingUsers = users.length > 0
@@ -39,13 +39,13 @@ const maxXp = Math.max(...rankingUsers.map((user: any) => Number(user.xp) || 0),
           Tabla de progreso para reconocer articulos, revisiones, debates resueltos y aportes visuales de la comunidad.
         </p>
         <div class="mt-7 flex flex-wrap gap-3">
-          <a href="#top" class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent">
+          <a href="#top" class="btn-primary">
             Ver top
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <path d="M5 12h14M13 5l7 7-7 7"></path>
             </svg>
           </a>
-          <a href={ROUTES.COLLABORATORS} class="inline-flex h-11 items-center rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent">
+          <a href={ROUTES.COLLABORATORS} class="btn-secondary">
             Ver colaboradores
           </a>
         </div>

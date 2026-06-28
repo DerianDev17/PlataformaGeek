@@ -1,9 +1,9 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { ExploreHub } from '@/widgets/explore-hub';
 import { FALLBACK_UNIVERSES, normalizeUniverseForShowcase } from '@/shared/constants';
 
-const response = await fetch('http://localhost:4321/api/universes?limit=50').catch(() => null);
+const response = await fetch(apiUrl('/universos?limit=50')).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const apiUniverses = Array.isArray(json?.data?.data) ? json.data.data : [];
 const universes = apiUniverses.length > 0

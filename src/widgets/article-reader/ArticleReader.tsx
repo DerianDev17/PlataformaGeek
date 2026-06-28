@@ -1,6 +1,7 @@
 import { Badge, SkeletonLine, Avatar } from '@/shared/ui';
 import { formatDate } from '@/shared/lib';
 import type { Article } from '@/entities/article';
+import { CommentSection } from '@/widgets/comments';
 
 interface ArticleReaderProps {
   article: Article | null;
@@ -72,6 +73,8 @@ export function ArticleReader({ article, loading }: ArticleReaderProps) {
       )}
 
       <div className="prose prose-invert max-w-none text-geek-text leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
+
+      <CommentSection articleId={article.id} />
     </article>
   );
 }

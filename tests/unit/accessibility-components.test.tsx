@@ -9,11 +9,9 @@ import {
   Avatar,
   Skeleton,
   SkeletonLine,
-  EmptyState,
   ToastProvider,
   useToast,
 } from '@/shared/ui';
-import { StatsBanner } from '@/widgets/stats-banner/StatsBanner';
 import { HeroHome } from '@/widgets/hero-home/HeroHome';
 
 function TestToastTrigger({ message }: { message: string }) {
@@ -51,11 +49,6 @@ describe('Accessibilidad', () => {
     it('Avatar sin src tiene role="img" como nombre accesible', () => {
       render(<Avatar src={null} alt="Jane Doe" />);
       expect(screen.getByRole('img', { name: 'Jane Doe' })).toBeInTheDocument();
-    });
-
-    it('EmptyState link de acción tiene nombre accesible', () => {
-      render(<EmptyState title="Vacío" action={{ label: 'Volver', href: '/' }} />);
-      expect(screen.getByRole('link', { name: 'Volver' })).toBeInTheDocument();
     });
   });
 
@@ -167,13 +160,6 @@ describe('Accessibilidad', () => {
     it('SkeletonLine wrapper tiene role="status" con label', () => {
       render(<SkeletonLine />);
       expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Cargando');
-    });
-
-    it('StatsBanner íconos tienen aria-hidden="true"', () => {
-      const stats = { universes: 1, articles: 2, characters: 3, users: 4, theories: 5 };
-      const { container } = render(<StatsBanner stats={stats} />);
-      const hiddenIcons = container.querySelectorAll('[aria-hidden="true"]');
-      expect(hiddenIcons.length).toBeGreaterThan(0);
     });
 
     it('HeroHome cursor de texto tiene aria-hidden', () => {

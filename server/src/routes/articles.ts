@@ -94,8 +94,12 @@ router.get('/:slug', optionalAuth, asyncHandler(async (req, res) => {
   ]);
 
   if (req.user) {
-    getDb().prepare('UPDATE articles SET views = views + 1 WHERE id = ?').run(article.id);
     article.views = (article.views as number) + 1;
+    try {
+      getDb().prepare('UPDATE articles SET views = ? WHERE id = ?').run(article.views, article.id);
+    } catch (err) {
+      console.error(`[articles] view counter write failed for ${article.id}:`, err);
+    }
   }
 
   res.json(success({

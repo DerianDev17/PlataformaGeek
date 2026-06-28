@@ -1,8 +1,9 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
-import { Badge, Card } from '@/shared/ui';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import { Card } from '@/shared/ui';
+import { AdminPanel } from '@/widgets/admin-panel';
 
-const response = await fetch('http://localhost:4321/api/admin/stats').catch(() => null);
+const response = await fetch(apiUrl('/admin/stats')).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const apiData = json?.data || null;
 const stats = apiData?.counts || apiData || null;
@@ -44,26 +45,5 @@ const stats = apiData?.counts || apiData || null;
     </div>
   )}
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <Card>
-      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Gestión de usuarios</h3>
-      <p class="text-sm text-geek-text-secondary mb-3">Administrar roles, suspensiones y ver actividad de usuarios.</p>
-      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
-    </Card>
-    <Card>
-      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Cola de revisión</h3>
-      <p class="text-sm text-geek-text-secondary mb-3">Revisar artículos y ediciones pendientes de aprobación.</p>
-      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
-    </Card>
-    <Card>
-      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Categorías</h3>
-      <p class="text-sm text-geek-text-secondary mb-3">Crear, editar y organizar categorías y subcategorías.</p>
-      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
-    </Card>
-    <Card>
-      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Reportes</h3>
-      <p class="text-sm text-geek-text-secondary mb-3">Ver reportes de contenido y comentarios marcados.</p>
-      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
-    </Card>
-  </div>
+  <AdminPanel client:only="react" />
 </MainLayout>

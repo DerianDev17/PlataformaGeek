@@ -3,7 +3,15 @@ import jwt from 'jsonwebtoken';
 import { getDb } from '../db/index.js';
 import { UnauthorizedError } from '../lib/errors.js';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+  if (IS_PRODUCTION) {
+    throw new Error(
+      'FATAL: JWT_SECRET and JWT_REFRESH_SECRET must be set in production. ' +
+      'Refusing to start with predictable token secrets.'
+    );
+  }
   console.warn(
     '\n\x1b[33m╔══════════════════════════════════════════════════════════╗\n' +
     '║  ADVERTENCIA: JWT secrets no configurados.              ║\n' +

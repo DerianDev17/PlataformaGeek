@@ -1,21 +1,21 @@
-import { useState, useCallback } from 'react';
-import { apiClient, ApiError } from '@/shared/api';
+import { useState, useCallback, useEffect } from 'react';
+import { apiClient } from '@/shared/api';
 
 export interface Comment {
   id: string;
-  content: string;
   articleId: string;
-  authorId: string;
+  content: string;
   author: {
+    id: string;
     username: string;
-    displayName: string;
     avatarUrl: string | null;
+    role: string;
   };
-  parentId: string | null;
-  replies?: Comment[];
   createdAt: string;
-  isHidden: boolean;
+  updatedAt: string;
 }
+
+type ApiEnvelope<T> = { success: boolean; data: T; message?: string };
 
 export function useComments(articleId: string, token?: string | null) {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -23,38 +23,53 @@ export function useComments(articleId: string, token?: string | null) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchComments = useCallback(async () => {
+    if (!articleId) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient.get<Comment[]>(`/articles/${articleId}/comments`);
-      setComments(data);
+      const response = await apiClient.get<ApiEnvelope<Comment[]>>(`/articles/${articleId}/comments`, token);
+      setComments(response.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar comentarios');
     } finally {
       setLoading(false);
     }
-  }, [articleId]);
+  }, [articleId, token]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
   const addComment = useCallback(
-    async (content: string, parentId?: string): Promise<boolean> => {
-      if (!token) return false;
+    async (content: string): Promise<Comment | null> => {
+      if (!token) {
+        setError('Necesitas iniciar sesion para comentar');
+        return null;
+      }
       setError(null);
       try {
-        await apiClient.post(`/articles/${articleId}/comments`, { content, parentId }, token);
-        await fetchComments();
-        return true;
+        const response = await apiClient.post<ApiEnvelope<Comment>>(
+          `/articles/${articleId}/comments`,
+          { content },
+          token
+        );
+        if (response.data) {
+          setComments((prev) => [...prev, response.data!]);
+          return response.data;
+        }
+        return null;
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al comentar';
-        setError(message);
-        return false;
+        setError(err instanceof Error ? err.message : 'Error al publicar comentario');
+        return null;
       }
     },
-    [articleId, token, fetchComments]
+    [articleId, token]
   );
 
   const deleteComment = useCallback(
     async (commentId: string): Promise<boolean> => {
       if (!token) return false;
+      setError(null);
       try {
         await apiClient.delete(`/comments/${commentId}`, token);
         setComments((prev) => prev.filter((c) => c.id !== commentId));

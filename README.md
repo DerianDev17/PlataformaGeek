@@ -22,7 +22,7 @@ Documentacion completa del producto en [`nexogeek_docs/`](../nexogeek_docs/).
 ```
 src/
   app/          config/, providers/
-  pages/        26 rutas (.astro)
+  pages/        28 rutas (.astro)
   widgets/      hero-home, universe-grid, article-reader, trending-sidebar, command-search
   features/     auth-login, search-content, create-article, edit-article, comment-article, vote-content
   entities/     article, universe, character, user, category, tag, theory

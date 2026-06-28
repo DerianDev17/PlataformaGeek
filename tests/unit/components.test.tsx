@@ -4,7 +4,6 @@ import { Button } from '@/shared/ui';
 import { Badge } from '@/shared/ui';
 import { Avatar } from '@/shared/ui';
 import { Skeleton } from '@/shared/ui';
-import { EmptyState } from '@/shared/ui';
 
 describe('UI Components', () => {
   describe('Button', () => {
@@ -16,7 +15,7 @@ describe('UI Components', () => {
     it('aplica variant primary por defecto', () => {
       render(<Button>Primary</Button>);
       const button = screen.getByText('Primary');
-      expect(button.className).toContain('bg-geek-accent');
+      expect(button.className).toContain('bg-geek-accent-hover');
     });
 
     it('aplica variant danger', () => {
@@ -86,21 +85,4 @@ describe('UI Components', () => {
     });
   });
 
-  describe('EmptyState', () => {
-    it('renderiza título y descripción', () => {
-      render(<EmptyState title="No data" description="Nothing here" />);
-      expect(screen.getByText('No data')).toBeInTheDocument();
-      expect(screen.getByText('Nothing here')).toBeInTheDocument();
-    });
-
-    it('renderiza botón de acción', () => {
-      render(
-        <EmptyState
-          title="No data"
-          action={{ label: 'Add item', onClick: () => {} }}
-        />
-      );
-      expect(screen.getByText('Add item')).toBeInTheDocument();
-    });
-  });
 });

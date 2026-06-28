@@ -1,10 +1,10 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardImage, CardTitle, CardDescription, Badge } from '@/shared/ui';
 import { ROUTES } from '@/shared/constants';
 import { formatDate } from '@/shared/lib';
 
-const response = await fetch('http://localhost:4321/api/articles').catch(() => null);
+const response = await fetch(apiUrl('/articles')).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const articles = json?.data?.data || [];
 ---

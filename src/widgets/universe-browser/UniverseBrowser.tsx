@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react';
+import { formatCompact } from '@/shared/lib';
 import {
   EXPLORE_CATEGORIES,
   FALLBACK_UNIVERSES,
@@ -28,11 +29,6 @@ const statusStyles: Record<ShowcaseUniverse['status'], string> = {
   Destacado: 'border-geek-accent/40 bg-geek-accent/15 text-violet-100',
   Nuevo: 'border-cyan-300/35 bg-cyan-300/10 text-cyan-100',
 };
-
-function formatCompact(value: number): string {
-  if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
-  return value.toString();
-}
 
 function getCategoryLabel(category: ExploreCategory): string {
   return EXPLORE_CATEGORIES.find((item) => item.value === category)?.label || 'Todos';

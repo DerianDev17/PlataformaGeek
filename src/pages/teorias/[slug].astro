@@ -1,0 +1,47 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { TheoryDetail } from '@/widgets/theory-detail';
+import { Breadcrumb } from '@/shared/ui';
+import { ROUTES } from '@/shared/constants';
+
+export async function getStaticPaths() {
+  try {
+    const response = await fetch('http://localhost:3001/api/theories?limit=50');
+    if (!response.ok) throw new Error('Backend error');
+    const json = await response.json();
+    const theories = json?.data?.data || [];
+    if (!theories.length) throw new Error('No theories');
+    return theories.map((t: any) => ({ params: { slug: t.slug } }));
+  } catch {
+    return [
+      { params: { slug: 'goku-vs-superman-quien-ganaria' } },
+      { params: { slug: 'quien-sera-el-proximo-gran-villano-del-ucm' } },
+    ];
+  }
+}
+
+const { slug } = Astro.params;
+
+const response = await fetch(`http://localhost:4321/api/theories/${slug}`).catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const theory = json?.data || null;
+
+if (!theory) {
+  return Astro.redirect('/404');
+}
+---
+
+<MainLayout title={theory.title} description={theory.content?.slice(0, 160)}>
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: ROUTES.HOME },
+      { label: 'Universos', href: ROUTES.UNIVERSES },
+      theory.universe && { label: theory.universe.name, href: ROUTES.UNIVERSE_DETAIL(theory.universe.slug) },
+      { label: theory.title },
+    ].filter(Boolean)}
+  />
+
+  <div class="mt-6">
+    <TheoryDetail theory={theory} client:load />
+  </div>
+</MainLayout>

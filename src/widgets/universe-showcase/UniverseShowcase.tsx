@@ -33,12 +33,12 @@ const UniverseCard = memo(function UniverseCard({ universe }: { universe: Univer
   return (
     <a
       href={ROUTES.UNIVERSE_DETAIL(universe.slug)}
-      className="group relative block min-h-[150px] overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary focus-visible:ring-2 focus-visible:ring-geek-accent"
+      className="group relative block min-h-[150px] overflow-hidden card-surface"
     >
       <img
         src={image}
         alt={`Universo ${universe.name}`}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        className="absolute inset-0 h-full w-full object-cover card-hover-img"
         loading="lazy"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#080A12] via-[#080A12]/40 to-transparent" aria-hidden="true" />
@@ -97,8 +97,8 @@ export const UniverseShowcase = memo(function UniverseShowcase({ universes, load
 function SectionHeader() {
   return (
     <div className="mb-3 flex items-center justify-between gap-4">
-      <h2 className="font-heading text-xl font-bold text-white">Explora por universos</h2>
-      <a href={ROUTES.UNIVERSES} className="text-sm font-medium text-geek-accent-text transition-colors hover:text-geek-accent-secondary">
+      <h2 className="section-title">Explora por universos</h2>
+      <a href={ROUTES.UNIVERSES} className="action-link">
         Ver todos
       </a>
     </div>

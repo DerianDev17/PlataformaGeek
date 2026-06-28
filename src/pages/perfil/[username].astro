@@ -1,5 +1,5 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { Avatar, Badge, Card, CardTitle, CardDescription } from '@/shared/ui';
 import { ROUTES } from '@/shared/constants';
 import { formatDate } from '@/shared/lib';
@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 const { username } = Astro.params;
 
-const response = await fetch(`http://localhost:4321/api/users/${username}`).catch(() => null);
+const response = await fetch(apiUrl(`/users/${username}`)).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const profile = json?.data || null;
 

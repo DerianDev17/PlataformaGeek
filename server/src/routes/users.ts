@@ -61,7 +61,7 @@ router.get('/:username', validate(usernameParamSchema, 'params'), optionalAuth, 
     return res.status(404).json(error('NOT_FOUND', 'Usuario no encontrado'));
   }
 
-  const [articleCount, commentCount, badges] = await Promise.all([
+  const [articleCount, commentCount, badges, lastActivity] = await Promise.all([
     asyncDb.get("SELECT COUNT(*) as count FROM articles WHERE author_id = ? AND status = 'published'", user.id),
     asyncDb.get('SELECT COUNT(*) as count FROM comments WHERE author_id = ?', user.id),
     asyncDb.all(`
@@ -69,6 +69,15 @@ router.get('/:username', validate(usernameParamSchema, 'params'), optionalAuth, 
       FROM user_badges ub JOIN badges b ON b.id = ub.badge_id
       WHERE ub.user_id = ?
     `, user.id),
+    asyncDb.get(`
+      SELECT MAX(activity_at) as last_active_at FROM (
+        SELECT updated_at as activity_at FROM articles WHERE author_id = ?
+        UNION ALL
+        SELECT created_at as activity_at FROM comments WHERE author_id = ?
+        UNION ALL
+        SELECT created_at as activity_at FROM revisions WHERE author_id = ?
+      )
+    `, user.id, user.id, user.id) as unknown as { last_active_at: string | null } | undefined,
   ]);
 
   res.json(success({
@@ -86,7 +95,7 @@ router.get('/:username', validate(usernameParamSchema, 'params'), optionalAuth, 
     commentCount: (commentCount as { count: number }).count,
     badges: (badges as Record<string, unknown>[]).map((b) => ({ id: b.id, name: b.name, slug: b.slug, description: b.description, icon: b.icon, earnedAt: b.earned_at })),
     joinedAt: user.created_at,
-    lastActiveAt: user.created_at,
+    lastActiveAt: lastActivity?.last_active_at || user.created_at,
   }));
 }));
 

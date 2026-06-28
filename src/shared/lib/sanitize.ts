@@ -14,14 +14,6 @@ function getParserDiv(): HTMLDivElement {
   return document.createElement('div');
 }
 
-export function sanitizeText(text: string): string {
-  return text
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
-}
-
 export function hasXSSRisk(content: string): boolean {
   const patterns = [
     /<script[\s\S]*?>[\s\S]*?<\/script>/gi,

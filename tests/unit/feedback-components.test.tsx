@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Modal, ToastProvider, useToast, EmptyState, Skeleton, SkeletonLine } from '@/shared/ui';
+import { Modal, ToastProvider, useToast, Skeleton, SkeletonLine } from '@/shared/ui';
 
 function TestToastTrigger({ message, type }: { message: string; type?: 'success' | 'error' | 'info' | 'warning' }) {
   const { showToast } = useToast();
@@ -163,55 +163,6 @@ describe('Feedback Components', () => {
       await waitFor(() => {
         expect(screen.queryByText('Desaparece')).not.toBeInTheDocument();
       });
-    });
-  });
-
-  describe('EmptyState', () => {
-    it('renderiza título y descripción', () => {
-      render(<EmptyState title="No data" description="Nothing here" />);
-      expect(screen.getByText('No data')).toBeInTheDocument();
-      expect(screen.getByText('Nothing here')).toBeInTheDocument();
-    });
-
-    it('renderiza sin descripción', () => {
-      render(<EmptyState title="Solo título" />);
-      expect(screen.getByText('Solo título')).toBeInTheDocument();
-    });
-
-    it('renderiza botón de acción con onClick', () => {
-      const onClick = vi.fn();
-      render(
-        <EmptyState
-          title="No data"
-          action={{ label: 'Add item', onClick }}
-        />
-      );
-      const button = screen.getByText('Add item');
-      expect(button).toBeInTheDocument();
-      fireEvent.click(button);
-      expect(onClick).toHaveBeenCalledTimes(1);
-    });
-
-    it('renderiza enlace de acción cuando href es proporcionado', () => {
-      render(
-        <EmptyState
-          title="No data"
-          action={{ label: 'Go home', href: '/home' }}
-        />
-      );
-      const link = screen.getByRole('link', { name: 'Go home' });
-      expect(link).toHaveAttribute('href', '/home');
-    });
-
-    it('renderiza icono cuando se proporciona', () => {
-      render(<EmptyState title="Empty" icon={<span data-testid="icon">🔍</span>} />);
-      expect(screen.getByTestId('icon')).toBeInTheDocument();
-    });
-
-    it('no renderiza icono cuando no se proporciona', () => {
-      render(<EmptyState title="Empty" />);
-      const iconContainer = document.querySelector('.text-geek-text-secondary.mb-4');
-      expect(iconContainer).not.toBeInTheDocument();
     });
   });
 

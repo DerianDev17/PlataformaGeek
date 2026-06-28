@@ -23,6 +23,16 @@ initializeDatabase();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+app.disable('x-powered-by');
+
+app.set('trust proxy', 1);
+
+const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:4321,http://localhost:3000')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -32,9 +42,10 @@ app.use(helmet({
     },
   },
   crossOriginResourcePolicy: { policy: 'same-origin' },
+  hsts: IS_PRODUCTION ? { maxAge: 31_536_000, includeSubDomains: true, preload: true } : false,
 }));
 app.use(cors({
-  origin: ['http://localhost:4321', 'http://localhost:3000'],
+  origin: corsOrigins,
   credentials: true,
 }));
 app.use(express.json({ limit: '1mb' }));
@@ -64,6 +75,9 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`🚀 NexoGeek API server running on http://localhost:${PORT}`);
   console.log(`📡 API available at http://localhost:${PORT}/api`);
+  if (IS_PRODUCTION) {
+    console.log(`🔒 Production mode: CORS=${corsOrigins.join(',')}`);
+  }
 });
 
 export default app;

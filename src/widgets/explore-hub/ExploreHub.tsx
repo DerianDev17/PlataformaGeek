@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react';
+import { formatCompact } from '@/shared/lib';
 import {
   EXPLORE_CATEGORIES,
   EXPLORE_COLLECTIONS,
@@ -27,11 +28,6 @@ function isCategory(value: string | undefined): value is ExploreCategory {
 
 function getCategoryLabel(category: ExploreCategory): string {
   return EXPLORE_CATEGORIES.find((item) => item.value === category)?.label || 'Todos';
-}
-
-function formatCompact(value: number): string {
-  if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
-  return value.toString();
 }
 
 function buildUniverseItems(universes: ShowcaseUniverse[]): ExploreItem[] {

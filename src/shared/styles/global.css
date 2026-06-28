@@ -3,14 +3,45 @@
 @tailwind utilities;
 
 @layer base {
+  :root,
+  [data-theme='dark'] {
+    --color-bg: #080A12;
+    --color-bg-secondary: #0F1119;
+    --color-bg-tertiary: #161822;
+    --color-accent: #6366F1;
+    --color-accent-hover: #4F46E5;
+    --color-accent-text: #8B8CF8;
+    --color-text: #E2E8F0;
+    --color-text-secondary: #94A3B8;
+    --color-border: #1E293B;
+    --color-sidebar-bg: #090d17;
+    --color-topbar-bg: #080b13;
+    color-scheme: dark;
+  }
+
+  [data-theme='light'] {
+    --color-bg: #FFFFFF;
+    --color-bg-secondary: #F8FAFC;
+    --color-bg-tertiary: #F1F5F9;
+    --color-text: #0F172A;
+    --color-text-secondary: #475569;
+    --color-border: #CBD5E1;
+    --color-sidebar-bg: #FFFFFF;
+    --color-topbar-bg: #FFFFFF;
+    color-scheme: light;
+  }
+
   body {
-    @apply bg-geek-dark text-geek-text font-body antialiased;
+    @apply font-body antialiased;
     min-width: 320px;
     overflow-x: hidden;
-    color-scheme: dark;
-    background:
-      linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0, rgba(8, 10, 18, 0) 260px),
-      #080A12;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    background-image: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0, rgba(8, 10, 18, 0) 260px);
+  }
+
+  [data-theme='light'] body {
+    background-image: linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0, rgba(255, 255, 255, 0) 260px);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -54,7 +85,8 @@
   }
 
   .skeleton {
-    @apply animate-pulse rounded bg-geek-dark-tertiary;
+    background-color: var(--color-bg-tertiary);
+    @apply animate-pulse rounded;
   }
 
   .scrollbar-hide {
@@ -64,5 +96,52 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .card-surface {
+    border-color: var(--color-border);
+    background-color: var(--color-bg-secondary);
+    @apply rounded-lg border transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent;
+  }
+
+  .card-hover-img {
+    @apply transition-transform duration-500 group-hover:scale-105;
+  }
+
+  .section-title {
+    @apply font-heading text-xl font-bold;
+    color: var(--color-text);
+  }
+
+  .section-header-gradient {
+    @apply absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t to-transparent;
+    --tw-gradient-from: var(--color-bg-secondary);
+  }
+
+  .panel {
+    border-color: var(--color-border);
+    background-color: var(--color-bg-secondary);
+    @apply rounded-lg border p-4;
+  }
+
+  .empty-panel {
+    border-color: var(--color-border);
+    background-color: var(--color-bg-secondary);
+    @apply rounded-lg border text-center;
+  }
+
+  .btn-primary {
+    @apply inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent;
+  }
+
+  .btn-secondary {
+    border-color: var(--color-border);
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    @apply inline-flex h-11 items-center gap-2 rounded-lg border px-5 text-sm font-semibold transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent;
+  }
+
+  .action-link {
+    @apply text-sm font-medium text-geek-accent-text transition-colors hover:text-geek-accent-secondary;
   }
 }

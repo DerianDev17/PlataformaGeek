@@ -1,0 +1,1 @@
+export { TheoryDetail } from './TheoryDetail';

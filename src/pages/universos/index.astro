@@ -1,5 +1,5 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { UniverseBrowser } from '@/widgets/universe-browser';
 import {
   EXPLORE_CATEGORIES,
@@ -9,7 +9,7 @@ import {
 } from '@/shared/constants';
 import { ROUTES } from '@/shared/constants';
 
-const response = await fetch('http://localhost:4321/api/universes?limit=50').catch(() => null);
+const response = await fetch(apiUrl('/universos?limit=50')).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const apiUniverses = Array.isArray(json?.data?.data) ? json.data.data : [];
 const universes = apiUniverses.length > 0
@@ -49,7 +49,7 @@ const categoryHighlights = EXPLORE_CATEGORIES.filter((item) => item.value !== 't
         <div class="mt-6 flex flex-wrap gap-3">
           <a
             href={ROUTES.EXPLORE}
-            class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent"
+            class="btn-primary"
           >
             Explorar contenido
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">

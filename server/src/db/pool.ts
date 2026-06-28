@@ -10,16 +10,47 @@ const numWorkers = Math.max(2, Math.min(os.cpus().length, 8));
 const workers: Worker[] = [];
 let nextWorker = 0;
 
+interface PendingQuery {
+  id: number;
+  worker: Worker;
+  reject: (err: Error) => void;
+}
+const pendingByWorker = new WeakMap<Worker, Map<number, PendingQuery>>();
+
+function registerPending(worker: Worker, q: PendingQuery): void {
+  let map = pendingByWorker.get(worker);
+  if (!map) {
+    map = new Map();
+    pendingByWorker.set(worker, map);
+  }
+  map.set(q.id, q);
+}
+
+function rejectAllForWorker(worker: Worker, reason: string): void {
+  const map = pendingByWorker.get(worker);
+  if (!map) return;
+  for (const [, q] of map) {
+    q.reject(new Error(reason));
+  }
+  map.clear();
+}
+
 function spawnWorker(index: number): void {
   const worker = new Worker(WORKER_PATH);
   worker.on('error', (err: Error) => {
     console.error(`[worker:${index}] crash:`, err.message);
     console.warn(`[pool] Replacing crashed worker ${index}...`);
+    rejectAllForWorker(worker, `Worker ${index} crashed: ${err.message}`);
     const idx = workers.indexOf(worker);
     if (idx !== -1) {
       workers.splice(idx, 1);
     }
     spawnWorker(index);
+  });
+  worker.on('exit', (code: number) => {
+    if (code !== 0) {
+      rejectAllForWorker(worker, `Worker exited with code ${code}`);
+    }
   });
   workers.push(worker);
 }
@@ -39,6 +70,7 @@ function execute(method: 'all' | 'get' | 'run', sql: string, params?: unknown[])
     const handler = (msg: { id: number; result?: unknown; error?: string }) => {
       if (msg.id === id) {
         worker.off('message', handler);
+        pendingByWorker.get(worker)?.delete(id);
         if (msg.error) {
           reject(new Error(msg.error));
         } else {
@@ -47,6 +79,7 @@ function execute(method: 'all' | 'get' | 'run', sql: string, params?: unknown[])
       }
     };
     worker.on('message', handler);
+    registerPending(worker, { id, worker, reject });
     worker.postMessage({ id, sql, params, method });
   });
 }

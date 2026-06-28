@@ -1,5 +1,5 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardTitle, CardDescription, Breadcrumb, Badge } from '@/shared/ui';
 import {
   CHARACTER_RELATED_ARTICLES,
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
   const fallbackPaths = FALLBACK_CHARACTERS.map((character) => ({ params: { slug: character.slug } }));
 
   try {
-    const response = await fetch('http://localhost:3001/api/characters?limit=50');
+    const response = await fetch(apiUrl('/characters?limit=50'));
     const json = response.ok ? await response.json() : null;
     const characters = Array.isArray(json?.data?.data) ? json.data.data : [];
     const apiPaths = characters.map((character: any) => ({ params: { slug: character.slug } }));
@@ -68,7 +68,7 @@ function buildFallbackCharacterDetail(character: any) {
   };
 }
 
-const response = await fetch(`http://localhost:4321/api/characters/${slug}`).catch(() => null);
+const response = await fetch(apiUrl(`/characters/${slug}`)).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const apiCharacter = json?.data || null;
 const fallbackCharacter = getFallbackCharacterBySlug(slug);

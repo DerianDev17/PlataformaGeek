@@ -22,16 +22,11 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/registro',
   PROFILE: (username: string) => `/perfil/${username}`,
+  ACCOUNT: '/cuenta',
   RANKING: '/ranking',
   ADMIN: '/admin',
   SEARCH: '/buscar',
 } as const;
-
-export const PROTECTED_ROUTES = [
-  '/crear',
-  '/editar',
-  '/admin',
-];
 
 export function isSafeInternalPath(path: string | null | undefined): path is string {
   return !!path && path.startsWith('/') && !path.startsWith('//');

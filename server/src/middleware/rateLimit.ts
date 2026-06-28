@@ -3,12 +3,13 @@ import { RateLimitError } from '../lib/errors.js';
 
 const store = new Map<string, { count: number; resetAt: number }>();
 
-// Rate limiting enabled
-const BYPASS_FOR_LOAD_TEST = false;
+function isLoadTestBypassed(): boolean {
+  return process.env.LOAD_TEST === 'true' || process.env.NODE_ENV === 'test';
+}
 
 export function rateLimit(maxRequests: number, windowSeconds: number) {
   return (req: Request, _res: Response, next: NextFunction): void => {
-    if (BYPASS_FOR_LOAD_TEST) return next();
+    if (isLoadTestBypassed()) return next();
 
     const key = req.ip || '127.0.0.1';
     const now = Date.now();

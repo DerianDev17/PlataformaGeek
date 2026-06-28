@@ -4,9 +4,9 @@ import { HeroHome } from '@/widgets/hero-home';
 import { UniverseShowcase } from '@/widgets/universe-showcase';
 import { FeaturedArticles } from '@/widgets/featured-articles';
 import { ActivityFeed } from '@/widgets/activity-feed';
-import { FALLBACK_HOME_DATA, ROUTES } from '@/shared/constants';
+import { FALLBACK_HOME_DATA, ROUTES, apiUrl } from '@/shared/constants';
 
-const response = await fetch('http://localhost:4321/api/home').catch(() => null);
+const response = await fetch(apiUrl('/home')).catch(() => null);
 const homeData = response?.ok ? await response.json().catch(() => null) : null;
 const data = homeData?.success ? homeData.data : null;
 

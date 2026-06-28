@@ -1,0 +1,42 @@
+---
+import { apiUrl } from '@/shared/constants';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { EditArticleForm } from '@/widgets/edit-article';
+
+export async function getStaticPaths() {
+  try {
+    const response = await fetch(apiUrl('/articles?limit=50'));
+    const json = await response.json();
+    const articles = json?.data?.data || [];
+    return articles.map((a: any) => ({ params: { slug: a.slug } }));
+  } catch {
+    return [
+      { params: { slug: 'que-es-el-ultra-instinto' } },
+      { params: { slug: 'quien-es-doctor-doom' } },
+    ];
+  }
+}
+
+const { slug } = Astro.params;
+---
+
+<MainLayout title="Editar articulo" description="Edita un articulo existente en NexoGeek" noindex>
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-8">
+      <div class="mb-2 flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-geek-accent to-geek-accent-secondary">
+          <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path>
+          </svg>
+        </div>
+        <h1 class="font-heading text-3xl font-bold text-geek-text">Editar articulo</h1>
+      </div>
+      <p class="max-w-2xl text-geek-text-secondary">
+        Modifica el contenido del articulo. Los cambios en articulos ya publicados quedaran pendientes de revision por un moderador.
+      </p>
+    </div>
+
+    <EditArticleForm slug={slug} client:only="react" />
+  </div>
+</MainLayout>

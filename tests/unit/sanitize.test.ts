@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeHTML, sanitizeText, hasXSSRisk } from '@/shared/lib';
+import { sanitizeHTML, hasXSSRisk } from '@/shared/lib';
 
 describe('sanitize', () => {
   describe('sanitizeHTML', () => {
@@ -22,21 +22,6 @@ describe('sanitize', () => {
       const result = sanitizeHTML('<div class="test">&');
       expect(result).not.toContain('<');
       expect(result).not.toContain('>');
-    });
-  });
-
-  describe('sanitizeText', () => {
-    it('escapa caracteres HTML', () => {
-      const result = sanitizeText('<script>alert("xss")</script>');
-      expect(result).toContain('&lt;');
-      expect(result).toContain('&gt;');
-      expect(result).toContain('&quot;');
-      expect(result).not.toContain('<script>');
-    });
-
-    it('preserva texto normal', () => {
-      const result = sanitizeText('Texto normal sin html');
-      expect(result).toBe('Texto normal sin html');
     });
   });
 

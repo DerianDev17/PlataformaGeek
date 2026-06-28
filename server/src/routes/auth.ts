@@ -5,7 +5,7 @@ import { hashPassword, verifyPassword } from '../lib/password.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { rateLimit } from '../middleware/rateLimit.js';
-import { registerSchema, loginSchema } from '../validators/schemas.js';
+import { registerSchema, loginSchema, updateProfileSchema } from '../validators/schemas.js';
 import { success, error } from '../lib/response.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { AppError, ConflictError, UnauthorizedError } from '../lib/errors.js';
@@ -173,6 +173,59 @@ router.get('/me', authenticate, asyncHandler(async (req, res) => {
     commentCount: (commentCount as { count: number }).count,
     joinedAt: user.created_at,
   }));
+}));
+
+router.patch('/me', authenticate, validate(updateProfileSchema), asyncHandler(async (req, res) => {
+  const updates: string[] = [];
+  const values: unknown[] = [];
+
+  if (req.body.displayName !== undefined) {
+    updates.push('display_name = ?');
+    values.push(req.body.displayName);
+  }
+  if (req.body.bio !== undefined) {
+    updates.push('bio = ?');
+    values.push(req.body.bio);
+  }
+  if (req.body.avatarUrl !== undefined) {
+    updates.push('avatar_url = ?');
+    values.push(req.body.avatarUrl);
+  }
+
+  if (updates.length === 0) {
+    return res.status(400).json(error('VALIDATION_ERROR', 'No hay campos para actualizar'));
+  }
+
+  updates.push("updated_at = datetime('now')");
+  values.push(req.user!.id);
+
+  const db = getDb();
+  db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+  cache.invalidate('users');
+  cache.invalidate('ranking');
+
+  const user = await asyncDb.get(`
+    SELECT id, username, email, display_name, avatar_url, bio, role, status, xp, level, created_at
+    FROM users WHERE id = ?
+  `, req.user!.id) as Record<string, unknown>;
+
+  if (!user) {
+    return res.status(404).json(error('NOT_FOUND', 'Usuario no encontrado'));
+  }
+
+  res.json(success({
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    displayName: user.display_name,
+    avatarUrl: user.avatar_url,
+    bio: user.bio,
+    role: user.role,
+    status: user.status,
+    xp: user.xp,
+    level: user.level,
+    joinedAt: user.created_at,
+  }, 'Perfil actualizado'));
 }));
 
 export default router;

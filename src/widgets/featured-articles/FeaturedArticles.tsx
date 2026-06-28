@@ -62,13 +62,13 @@ function ArticleCard({ article, index }: { article: ArticleItem; index: number }
   return (
     <a
       href={ROUTES.ARTICLE_DETAIL(article.slug)}
-      className="group block overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent"
+      className="group block overflow-hidden card-surface"
     >
       <div className="relative h-36 overflow-hidden">
         <img
           src={image}
           alt={`Portada de ${article.title}`}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover card-hover-img"
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#080A12]/88 via-transparent to-black/10" aria-hidden="true" />
@@ -165,7 +165,7 @@ function SectionHeader({ activeTab, onTabChange }: { activeTab: TabId; onTabChan
   return (
     <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="font-heading text-xl font-bold text-white">Articulos destacados</h2>
+        <h2 className="section-title">Articulos destacados</h2>
         <div role="tablist" aria-label="Filtros de articulos" className="flex rounded-full border border-geek-border bg-geek-dark-secondary p-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -186,7 +186,7 @@ function SectionHeader({ activeTab, onTabChange }: { activeTab: TabId; onTabChan
           })}
         </div>
       </div>
-      <a href={ROUTES.ARTICLES} className="text-sm font-medium text-geek-accent-text transition-colors hover:text-geek-accent-secondary">
+      <a href={ROUTES.ARTICLES} className="action-link">
         Ver todos
       </a>
     </div>

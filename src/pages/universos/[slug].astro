@@ -1,5 +1,5 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
 import { UniverseDetail } from '@/widgets/universe-detail';
 import { Breadcrumb } from '@/shared/ui';
 import {
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
   const fallbackPaths = FALLBACK_UNIVERSES.map((universe) => ({ params: { slug: universe.slug } }));
 
   try {
-    const response = await fetch('http://localhost:3001/api/universes?limit=50');
+    const response = await fetch(apiUrl('/universes?limit=50'));
     const json = response.ok ? await response.json() : null;
     const universes = Array.isArray(json?.data?.data) ? json.data.data : [];
     const apiPaths = universes.map((universe: any) => ({ params: { slug: universe.slug } }));
@@ -109,7 +109,7 @@ function buildFallbackDetail(universe: ShowcaseUniverse) {
   };
 }
 
-const response = await fetch(`http://localhost:4321/api/universes/${slug}`).catch(() => null);
+const response = await fetch(apiUrl(`/universes/${slug}`)).catch(() => null);
 const json = response?.ok ? await response.json().catch(() => null) : null;
 const apiUniverse = json?.data || null;
 const fallbackUniverse = getFallbackUniverseBySlug(slug);

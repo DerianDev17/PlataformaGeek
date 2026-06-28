@@ -23,6 +23,8 @@ export default {
         'geek-light-text': '#0F172A',
         'geek-light-text-secondary': '#475569',
         'geek-light-border': '#CBD5E1',
+        'geek-sidebar-bg': '#090d17',
+        'geek-topbar-bg': '#080b13',
       },
       fontFamily: {
         heading: ['"Space Grotesk"', 'sans-serif'],
