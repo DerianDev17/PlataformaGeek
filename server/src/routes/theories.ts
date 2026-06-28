@@ -5,7 +5,7 @@ import { authenticate, optionalAuth } from '../middleware/auth.js';
 import { requirePermission } from '../middleware/authorize.js';
 import { validate } from '../middleware/validate.js';
 import { createTheorySchema, voteSchema } from '../validators/schemas.js';
-import { generateSlug, uniqueSlug } from '../lib/slug.js';
+import { uniqueSlug } from '../lib/slug.js';
 import { success, error } from '../lib/response.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 

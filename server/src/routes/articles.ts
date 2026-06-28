@@ -6,13 +6,12 @@ import { requirePermission } from '../middleware/authorize.js';
 import { validate } from '../middleware/validate.js';
 import {
   createArticleSchema, updateArticleSchema, createRevisionSchema,
-  reviewRevisionSchema, paginationSchema,
+  reviewRevisionSchema,
 } from '../validators/schemas.js';
 import { generateSlug, uniqueSlug } from '../lib/slug.js';
 import { sanitizeHTML, hasXSSRisk } from '../lib/sanitize.js';
 import { success, error } from '../lib/response.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { ForbiddenError } from '../lib/errors.js';
 
 const router = Router();
 

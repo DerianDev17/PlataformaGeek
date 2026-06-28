@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { useAuth } from '@/features/auth-login';
-import type { AuthUser, LoginDTO, RegisterDTO, UserRole } from '@/entities/user';
+import type { AuthUser, LoginDTO, RegisterDTO } from '@/entities/user';
 
 interface AuthContextValue {
   user: AuthUser | null;

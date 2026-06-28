@@ -1,17 +1,9 @@
 export function sanitizeHTML(dirty: string): string {
-  const div = getParserDiv();
-  div.textContent = dirty;
-  return div.innerHTML;
-}
-
-function getParserDiv(): HTMLDivElement {
-  if (typeof document === 'undefined') {
-    return {
-      textContent: '',
-      get innerHTML() { return this.textContent || ''; },
-    } as unknown as HTMLDivElement;
-  }
-  return document.createElement('div');
+  return dirty
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
 }
 
 export function hasXSSRisk(content: string): boolean {

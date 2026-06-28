@@ -15,7 +15,7 @@ const sizeClasses = {
 
 export function Avatar({ src, alt, size = 'md', className = '' }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
-  const showImage = src && !hasError;
+  const showImage = Boolean(src && !hasError);
 
   const initials = alt
     .split(' ')
@@ -30,7 +30,7 @@ export function Avatar({ src, alt, size = 'md', className = '' }: AvatarProps) {
     <span className={wrapperClasses} role="img" aria-label={alt}>
       {showImage && (
         <img
-          src={src}
+          src={src ?? undefined}
           alt=""
           className="absolute inset-0 h-full w-full rounded-full object-cover"
           onError={() => setHasError(true)}

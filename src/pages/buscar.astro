@@ -1,13 +1,13 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { ExploreHub } from '@/widgets/explore-hub';
 import { FALLBACK_UNIVERSES, normalizeUniverseForShowcase } from '@/shared/constants';
+import { loadPageCollection } from '@/shared/lib';
+import type { Universe } from '@/entities/universe';
 
-const response = await fetch(apiUrl('/universos?limit=50')).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const apiUniverses = Array.isArray(json?.data?.data) ? json.data.data : [];
+const apiUniverses = await loadPageCollection<Universe>('/universes?limit=50');
 const universes = apiUniverses.length > 0
-  ? apiUniverses.map((universe: any, index: number) => normalizeUniverseForShowcase(universe, index))
+  ? apiUniverses.map((universe, index: number) => normalizeUniverseForShowcase(universe, index))
   : FALLBACK_UNIVERSES;
 
 const initialQuery = Astro.url.searchParams.get('q') || '';

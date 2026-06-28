@@ -8,7 +8,6 @@ import { rateLimit } from '../middleware/rateLimit.js';
 import { registerSchema, loginSchema, updateProfileSchema } from '../validators/schemas.js';
 import { success, error } from '../lib/response.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { AppError, ConflictError, UnauthorizedError } from '../lib/errors.js';
 
 const router = Router();
 

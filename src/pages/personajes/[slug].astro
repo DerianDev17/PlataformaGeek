@@ -1,5 +1,5 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardTitle, CardDescription, Breadcrumb, Badge } from '@/shared/ui';
 import {
   CHARACTER_RELATED_ARTICLES,
@@ -9,20 +9,21 @@ import {
   getFallbackCharacterBySlug,
   normalizeCharacterForShowcase,
 } from '@/shared/constants';
+import { getSlugPaths, loadPageData } from '@/shared/lib';
+import type { Character, CharacterRelation } from '@/entities/character';
+
+type CharacterPageData = Character & {
+  relationships?: CharacterRelation[];
+  articles?: Array<{
+    title: string;
+    slug: string;
+    summary: string;
+    universeFallback?: boolean;
+  }>;
+};
 
 export async function getStaticPaths() {
-  const fallbackPaths = FALLBACK_CHARACTERS.map((character) => ({ params: { slug: character.slug } }));
-
-  try {
-    const response = await fetch(apiUrl('/characters?limit=50'));
-    const json = response.ok ? await response.json() : null;
-    const characters = Array.isArray(json?.data?.data) ? json.data.data : [];
-    const apiPaths = characters.map((character: any) => ({ params: { slug: character.slug } }));
-    const merged = new Map([...fallbackPaths, ...apiPaths].map((path) => [path.params.slug, path]));
-    return [...merged.values()];
-  } catch {
-    return fallbackPaths;
-  }
+  return getSlugPaths('/characters?limit=50', FALLBACK_CHARACTERS.map((character) => character.slug));
 }
 
 const { slug } = Astro.params;
@@ -68,9 +69,7 @@ function buildFallbackCharacterDetail(character: any) {
   };
 }
 
-const response = await fetch(apiUrl(`/characters/${slug}`)).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const apiCharacter = json?.data || null;
+const apiCharacter = await loadPageData<CharacterPageData | null>(`/characters/${slug}`, null);
 const fallbackCharacter = getFallbackCharacterBySlug(slug);
 const character = apiCharacter
   ? {
@@ -109,7 +108,7 @@ if (!character) {
           {character.alias && <p class="mt-1 text-geek-text-secondary">{character.alias}</p>}
           {character.universe && (
             <a href={ROUTES.UNIVERSE_DETAIL(character.universe.slug)}>
-              <Badge variant="info" class="mt-2">{character.universe.name}</Badge>
+              <Badge variant="info" className="mt-2">{character.universe.name}</Badge>
             </a>
           )}
         </div>
@@ -126,7 +125,7 @@ if (!character) {
             {character.relationships.map((rel: any) => (
               <Card>
                 <p class="text-sm font-medium text-geek-text">{rel.relatedCharacter?.name || 'Desconocido'}</p>
-                <Badge size="sm" variant="default" class="mt-1">{rel.relationType}</Badge>
+                <Badge size="sm" variant="default" className="mt-1">{rel.relationType}</Badge>
                 <p class="mt-1 text-xs text-geek-text-secondary">{rel.description}</p>
               </Card>
             ))}
@@ -152,7 +151,7 @@ if (!character) {
     </div>
 
     <aside class="w-full flex-shrink-0 md:w-64">
-      <Card class="space-y-3">
+      <Card className="space-y-3">
         <h3 class="text-sm font-semibold uppercase tracking-wider text-geek-text-secondary">Info</h3>
         <div class="space-y-2 text-sm text-geek-text-secondary">
           {character.universe && (

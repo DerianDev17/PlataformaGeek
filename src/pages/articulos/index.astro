@@ -1,12 +1,11 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardImage, CardTitle, CardDescription, Badge } from '@/shared/ui';
 import { ROUTES } from '@/shared/constants';
-import { formatDate } from '@/shared/lib';
+import { formatDate, loadPageCollection } from '@/shared/lib';
+import type { Article } from '@/entities/article';
 
-const response = await fetch(apiUrl('/articles')).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const articles = json?.data?.data || [];
+const articles = await loadPageCollection<Article>('/articles');
 ---
 
 <MainLayout title="Artículos" description="Lee artículos de la comunidad geek">
@@ -20,7 +19,7 @@ const articles = json?.data?.data || [];
       </div>
     ) : (
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {articles.map((article: any) => (
+        {articles.map((article) => (
           <a href={ROUTES.ARTICLE_DETAIL(article.slug)}>
             <Card hover>
               {article.coverImage && <CardImage src={article.coverImage} alt={article.title} />}

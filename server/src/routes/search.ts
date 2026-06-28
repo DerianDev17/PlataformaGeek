@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import type { z } from 'zod';
 import { asyncDb, cache } from '../db/index.js';
 import { validate } from '../middleware/validate.js';
 import { searchQuerySchema } from '../validators/schemas.js';
@@ -6,9 +7,11 @@ import { success } from '../lib/response.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
+type SearchQuery = z.infer<typeof searchQuerySchema>;
+type SearchResultRow = Record<string, unknown>;
 
 router.get('/', validate(searchQuerySchema, 'query'), asyncHandler(async (req, res) => {
-  const { q, type, limit } = (req as any).validatedQuery;
+  const { q, type, limit } = req.validatedQuery as SearchQuery;
   const cacheKey = `search:${q}:${type || 'all'}:${limit}`;
   const cached = cache.get<Record<string, unknown>>(cacheKey);
   if (cached) {
@@ -16,7 +19,7 @@ router.get('/', validate(searchQuerySchema, 'query'), asyncHandler(async (req, r
     return;
   }
 
-  const results: Record<string, unknown[]> = {};
+  const results: Record<string, SearchResultRow[]> = {};
   const promises: Promise<unknown>[] = [];
 
   if (!type || type === 'universe') {
@@ -109,14 +112,14 @@ router.get('/', validate(searchQuerySchema, 'query'), asyncHandler(async (req, r
   await Promise.all(promises);
 
   const flat = [
-    ...(type ? [] : (results.universes || []).map((r: any) => ({ ...r, type: 'universe' }))),
+    ...(type ? [] : (results.universes || []).map((r) => ({ ...r, type: 'universe' }))),
     ...(results.articles || []),
     ...(results.characters || []),
     ...(results.theories || []),
     ...(results.users || []),
   ];
 
-  const data = type ? (results as any)[type + 's'] || [] : { results: flat };
+  const data = type ? results[`${type}s`] || [] : { results: flat };
   cache.set(cacheKey, data, 10_000);
   res.json(success(data));
 }));

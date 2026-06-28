@@ -1,20 +1,13 @@
 ---
-import { apiUrl } from '@/shared/constants';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { EditArticleForm } from '@/widgets/edit-article';
+import { getSlugPaths } from '@/shared/lib';
 
 export async function getStaticPaths() {
-  try {
-    const response = await fetch(apiUrl('/articles?limit=50'));
-    const json = await response.json();
-    const articles = json?.data?.data || [];
-    return articles.map((a: any) => ({ params: { slug: a.slug } }));
-  } catch {
-    return [
-      { params: { slug: 'que-es-el-ultra-instinto' } },
-      { params: { slug: 'quien-es-doctor-doom' } },
-    ];
-  }
+  return getSlugPaths('/articles?limit=50', [
+    'que-es-el-ultra-instinto',
+    'quien-es-doctor-doom',
+  ]);
 }
 
 const { slug } = Astro.params;

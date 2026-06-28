@@ -2,14 +2,14 @@ import { useState, type FormEvent } from 'react';
 import { Avatar, Button, SkeletonLine, EmptyState } from '@/shared/ui';
 import { timeAgo } from '@/shared/lib';
 import { useComments, type Comment } from '@/features/comment-article';
-import { useAuthContext } from '@/app/providers/AuthProvider';
+import { AuthProvider, useAuthContext } from '@/app/providers/AuthProvider';
 
 interface CommentSectionProps {
   articleId: string;
   initialCount?: number;
 }
 
-export function CommentSection({ articleId }: CommentSectionProps) {
+function CommentSectionInner({ articleId }: CommentSectionProps) {
   const { user, isAuthenticated } = useAuthContext();
   const { comments, loading, error, addComment, deleteComment } = useComments(articleId, user?.token);
   const [draft, setDraft] = useState('');
@@ -140,6 +140,14 @@ export function CommentSection({ articleId }: CommentSectionProps) {
         </ul>
       )}
     </section>
+  );
+}
+
+export function CommentSection(props: CommentSectionProps) {
+  return (
+    <AuthProvider>
+      <CommentSectionInner {...props} />
+    </AuthProvider>
   );
 }
 

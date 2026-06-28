@@ -1,8 +1,20 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { Avatar, Badge, Card, CardTitle, CardDescription } from '@/shared/ui';
 import { ROUTES } from '@/shared/constants';
-import { formatDate } from '@/shared/lib';
+import { formatDate, loadPageData } from '@/shared/lib';
+import type { User } from '@/entities/user';
+
+type ProfileBadge = string | { name: string };
+type ProfilePageData = Omit<User, 'badges'> & {
+  badges?: ProfileBadge[];
+  contributions?: Array<{
+    title: string;
+    slug: string;
+    summary: string;
+    createdAt: string;
+  }>;
+};
 
 export async function getStaticPaths() {
   return [
@@ -14,14 +26,14 @@ export async function getStaticPaths() {
 }
 
 const { username } = Astro.params;
-
-const response = await fetch(apiUrl(`/users/${username}`)).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const profile = json?.data || null;
+const profile = await loadPageData<ProfilePageData | null>(`/users/${username}`, null);
 
 if (!profile) {
   return Astro.redirect('/404');
 }
+
+const badges = profile.badges || [];
+const contributions = profile.contributions || [];
 ---
 
 <MainLayout title={`${profile.displayName || profile.username}`} description={profile.bio || `Perfil de ${profile.username}`}>
@@ -47,22 +59,22 @@ if (!profile) {
       </div>
     </div>
 
-    {profile.badges?.length > 0 && (
+    {badges.length > 0 && (
       <div class="mb-8">
         <h2 class="text-lg font-bold text-geek-text font-heading mb-3">Insignias</h2>
         <div class="flex flex-wrap gap-2">
-          {profile.badges.map((badge: string) => (
-            <Badge variant="success" size="md">{badge}</Badge>
+          {badges.map((badge) => (
+            <Badge variant="success" size="md">{typeof badge === 'string' ? badge : badge.name}</Badge>
           ))}
         </div>
       </div>
     )}
 
-    {profile.contributions?.length > 0 && (
+    {contributions.length > 0 && (
       <div>
         <h2 class="text-lg font-bold text-geek-text font-heading mb-4">Contribuciones</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {profile.contributions.map((article: any) => (
+          {contributions.map((article) => (
             <a href={ROUTES.ARTICLE_DETAIL(article.slug)}>
               <Card hover>
                 <CardTitle>{article.title}</CardTitle>

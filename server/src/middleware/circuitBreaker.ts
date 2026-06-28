@@ -32,7 +32,7 @@ function recordSuccess(): void {
   }
 }
 
-export function circuitBreaker(req: Request, res: Response, next: NextFunction): void {
+export function circuitBreaker(_req: Request, res: Response, next: NextFunction): void {
   const now = Date.now();
 
   if (state === State.OPEN) {

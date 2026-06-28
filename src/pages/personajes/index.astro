@@ -1,5 +1,5 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import {
   CHARACTER_RELATIONS,
   FALLBACK_CHARACTERS,
@@ -7,11 +7,11 @@ import {
   ROUTES,
   normalizeCharacterForShowcase,
 } from '@/shared/constants';
+import { loadPageCollection } from '@/shared/lib';
+import type { Character } from '@/entities/character';
 
-const response = await fetch(apiUrl('/characters?limit=50')).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const apiCharacters = Array.isArray(json?.data?.data) ? json.data.data : [];
-const normalizedApiCharacters = apiCharacters.map((character: any, index: number) => normalizeCharacterForShowcase(character, index));
+const apiCharacters = await loadPageCollection<Character>('/characters?limit=50');
+const normalizedApiCharacters = apiCharacters.map((character, index) => normalizeCharacterForShowcase(character, index));
 const characterMap = new Map(FALLBACK_CHARACTERS.map((character) => [character.slug, character]));
 for (const character of normalizedApiCharacters) {
   characterMap.set(character.slug, character);

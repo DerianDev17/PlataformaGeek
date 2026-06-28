@@ -1,5 +1,5 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { UniverseDetail } from '@/widgets/universe-detail';
 import { Breadcrumb } from '@/shared/ui';
 import {
@@ -12,25 +12,57 @@ import {
   ROUTES,
   type ShowcaseUniverse,
 } from '@/shared/constants';
+import { getSlugPaths, loadPageData } from '@/shared/lib';
+
+type UniversePageData = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  coverImage: string | null;
+  bannerImage: string | null;
+  articleCount: number;
+  characterCount: number;
+  theoryCount: number;
+  recentArticles?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    summary: string;
+    coverImage: string | null;
+    views: number;
+    createdAt: string;
+  }>;
+  featuredCharacters?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    alias: string | null;
+    imageUrl: string | null;
+    description: string;
+  }>;
+  popularTheories?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    content: string;
+    status: string;
+    votes: number;
+    createdAt: string;
+    author: { username: string; avatarUrl: string | null };
+  }>;
+  category?: ShowcaseUniverse['category'];
+  momentum?: string;
+  editors?: number;
+};
 
 export async function getStaticPaths() {
-  const fallbackPaths = FALLBACK_UNIVERSES.map((universe) => ({ params: { slug: universe.slug } }));
-
-  try {
-    const response = await fetch(apiUrl('/universes?limit=50'));
-    const json = response.ok ? await response.json() : null;
-    const universes = Array.isArray(json?.data?.data) ? json.data.data : [];
-    const apiPaths = universes.map((universe: any) => ({ params: { slug: universe.slug } }));
-    const merged = new Map([...fallbackPaths, ...apiPaths].map((path) => [path.params.slug, path]));
-    return [...merged.values()];
-  } catch {
-    return fallbackPaths;
-  }
+  return getSlugPaths('/universes?limit=50', FALLBACK_UNIVERSES.map((universe) => universe.slug));
 }
 
 const { slug } = Astro.params;
 
-function buildFallbackDetail(universe: ShowcaseUniverse) {
+function buildFallbackDetail(universe: ShowcaseUniverse): UniversePageData {
   const relatedItems = EXPLORE_ITEMS.filter((item) => item.category === universe.category).slice(0, 3);
   const articles = relatedItems.length > 0 ? relatedItems : EXPLORE_ITEMS.slice(0, 3);
   const universeCharacters = FALLBACK_CHARACTERS.filter((character) => character.universe.slug === universe.slug).slice(0, 3);
@@ -109,9 +141,7 @@ function buildFallbackDetail(universe: ShowcaseUniverse) {
   };
 }
 
-const response = await fetch(apiUrl(`/universes/${slug}`)).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const apiUniverse = json?.data || null;
+const apiUniverse = await loadPageData<UniversePageData | null>(`/universes/${slug}`, null);
 const fallbackUniverse = getFallbackUniverseBySlug(slug);
 const normalizedApiUniverse = apiUniverse ? normalizeUniverseForShowcase(apiUniverse) : null;
 const universe = apiUniverse || (slug === 'marvel' ? getMarvelUniverseDetail() : fallbackUniverse ? buildFallbackDetail(normalizedApiUniverse || fallbackUniverse) : null);

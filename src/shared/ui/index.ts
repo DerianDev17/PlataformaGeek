@@ -6,6 +6,7 @@ export { Textarea } from './Textarea';
 export { Avatar } from './Avatar';
 export { Modal } from './Modal';
 export { Skeleton, SkeletonLine } from './Skeleton';
+export { EmptyState } from './EmptyState';
 export { Breadcrumb } from './Breadcrumb';
 export { ToastProvider, useToast } from './Toast';
 export { Icon } from './Icon';

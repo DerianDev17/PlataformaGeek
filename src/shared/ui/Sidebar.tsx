@@ -71,19 +71,6 @@ function parseHref(href: string): { pathname: string; search: string } {
   }
 }
 
-function IconButton({ label, icon }: { label: string; icon: IconName }) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      className="grid h-10 w-10 place-items-center rounded-lg border border-geek-border/80 bg-geek-dark-secondary/70 text-geek-text-secondary transition-colors hover:border-geek-accent/60 hover:text-geek-text focus-visible:ring-2 focus-visible:ring-geek-accent"
-    >
-      <Icon name={icon} className="h-5 w-5" />
-    </button>
-  );
-}
-
 export default function Sidebar({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>

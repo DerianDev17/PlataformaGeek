@@ -71,9 +71,11 @@ Never read `window.location.search` etc. during initial render — causes hydrat
 
 ### Dynamic routes
 All `[slug]` / `[username]` pages **must** export `getStaticPaths()` (output is `static`). Add at least one sample path per new dynamic route.
+Use `getSlugPaths()` from `src/shared/lib/staticPaths.ts` for API-backed slug pages so API paths and fallback paths are merged consistently.
 
 ### API response format
 Backend wraps all responses in `{ success, data, message }`. Astro pages fetch in SSR must unwrap via `json?.data`. Client-side `apiClient.get/post` returns the full envelope — unwrap `.data` in the hook.
+For Astro SSR page loads, prefer `loadPageData()` / `loadPageCollection()` from `src/shared/lib/pageData.ts` instead of repeating `fetch(apiUrl(...))` unwrap blocks.
 
 ### Data safety
 - Optional API arrays: always `data.foo || []` (e.g. `recentArticles`, `featuredCharacters`).

@@ -1,12 +1,19 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { COLLABORATOR_PROFILES, HOME_IMAGES, RANKING_TIERS, ROUTES } from '@/shared/constants';
+import { loadPageData } from '@/shared/lib';
 
-const response = await fetch(apiUrl('/users/ranking')).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const users = json?.data || [];
+type RankingUser = {
+  username: string;
+  displayName?: string;
+  level?: number;
+  articleCount?: number;
+  xp?: number;
+};
+
+const users = await loadPageData<RankingUser[]>('/users/ranking', []);
 const rankingUsers = users.length > 0
-  ? users.map((user: any, index: number) => ({
+  ? users.map((user, index: number) => ({
       username: user.username,
       displayName: user.displayName || user.username,
       role: `Nivel ${user.level || 1}`,
@@ -20,7 +27,7 @@ const rankingUsers = users.length > 0
       href: ROUTES.PROFILE(user.username),
     }))
   : COLLABORATOR_PROFILES;
-const maxXp = Math.max(...rankingUsers.map((user: any) => Number(user.xp) || 0), 1);
+const maxXp = Math.max(...rankingUsers.map((user) => Number(user.xp) || 0), 1);
 ---
 
 <MainLayout title="Ranking" description="Top colaboradores, XP y niveles de la comunidad geek">

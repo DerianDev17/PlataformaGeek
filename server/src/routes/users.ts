@@ -1,15 +1,17 @@
 import { Router } from 'express';
+import type { z } from 'zod';
 import { asyncDb, cache } from '../db/index.js';
-import { authenticate, optionalAuth } from '../middleware/auth.js';
+import { optionalAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { userQuerySchema, usernameParamSchema } from '../validators/schemas.js';
 import { success, error } from '../lib/response.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
+type UserQuery = z.infer<typeof userQuerySchema>;
 
 router.get('/ranking', validate(userQuerySchema, 'query'), asyncHandler(async (req, res) => {
-  const { limit } = (req as any).validatedQuery;
+  const { limit } = req.validatedQuery as UserQuery;
 
   const cacheKey = `ranking:${limit}`;
   const cached = cache.get<Record<string, unknown>[]>(cacheKey);
@@ -101,7 +103,7 @@ router.get('/:username', validate(usernameParamSchema, 'params'), optionalAuth, 
 
 router.get('/:username/articles', validate(usernameParamSchema, 'params'), validate(userQuerySchema, 'query'), asyncHandler(async (req, res) => {
   const { username } = req.params;
-  const { limit } = (req as any).validatedQuery;
+  const { limit } = req.validatedQuery as UserQuery;
 
   const user = await asyncDb.get('SELECT id FROM users WHERE username = ?', username) as { id: string } | undefined;
   if (!user) {
@@ -135,7 +137,7 @@ router.get('/:username/articles', validate(usernameParamSchema, 'params'), valid
 
 router.get('/:username/contributions', validate(usernameParamSchema, 'params'), validate(userQuerySchema, 'query'), asyncHandler(async (req, res) => {
   const { username } = req.params;
-  const { limit } = (req as any).validatedQuery;
+  const { limit } = req.validatedQuery as UserQuery;
 
   const user = await asyncDb.get('SELECT id FROM users WHERE username = ?', username) as { id: string } | undefined;
   if (!user) {

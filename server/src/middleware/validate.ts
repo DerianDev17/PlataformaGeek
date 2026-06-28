@@ -18,7 +18,7 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
     if (source === 'body') {
       req.body = result.data;
     } else if (source === 'query') {
-      (req as any).validatedQuery = result.data;
+      req.validatedQuery = result.data;
     }
     next();
   };

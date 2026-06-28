@@ -1,33 +1,27 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { ArticleReader } from '@/widgets/article-reader';
 import { Card, Breadcrumb } from '@/shared/ui';
 import { EditArticleLink } from '@/shared/ui/EditArticleLink';
 import { ROUTES } from '@/shared/constants';
+import { getSlugPaths, loadPageData } from '@/shared/lib';
+import type { Article } from '@/entities/article';
 
 export async function getStaticPaths() {
-  try {
-    const response = await fetch(apiUrl('/articles?limit=50'));
-    const json = await response.json();
-    const articles = json?.data?.data || [];
-    return articles.map((a: any) => ({ params: { slug: a.slug } }));
-  } catch {
-    return [
-      { params: { slug: 'que-es-el-ultra-instinto' } },
-      { params: { slug: 'quien-es-doctor-doom' } },
-    ];
-  }
+  return getSlugPaths('/articles?limit=50', [
+    'que-es-el-ultra-instinto',
+    'quien-es-doctor-doom',
+  ]);
 }
 
 const { slug } = Astro.params;
-
-const response = await fetch(apiUrl(`/articles/${slug}`)).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const article = json?.data || null;
+const article = await loadPageData<Article | null>(`/articles/${slug}`, null);
 
 if (!article) {
   return Astro.redirect('/404');
 }
+
+const relatedArticles = article.relatedArticles || [];
 ---
 
 <MainLayout title={article.title} description={article.summary}>
@@ -48,14 +42,14 @@ if (!article) {
     </div>
 
     <aside class="w-full lg:w-72 flex-shrink-0">
-      {article.relatedArticles?.length > 0 && (
+      {relatedArticles.length > 0 && (
         <div class="space-y-4">
           <Card>
             <h3 class="text-sm font-semibold text-geek-text-secondary uppercase tracking-wider mb-3">
               Artículos relacionados
             </h3>
             <div class="space-y-3">
-              {article.relatedArticles.map((related: any) => (
+              {relatedArticles.map((related) => (
                 <a href={ROUTES.ARTICLE_DETAIL(related.slug)} class="block hover:bg-geek-dark-tertiary rounded-lg p-2 -mx-2 transition-colors">
                   <p class="text-sm font-medium text-geek-text line-clamp-1">{related.title}</p>
                   <p class="text-xs text-geek-text-secondary mt-0.5">{related.views} vistas</p>

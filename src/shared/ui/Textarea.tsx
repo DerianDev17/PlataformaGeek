@@ -1,13 +1,16 @@
-import { forwardRef, type TextareaHTMLAttributes } from 'react';
+import { forwardRef, useId, type TextareaHTMLAttributes } from 'react';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
+  helperText?: string;
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = '', id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
+  ({ label, error, helperText, className = '', id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-') || generatedId;
+    const descriptionId = error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined;
 
     return (
       <div className="w-full">
@@ -23,12 +26,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             error ? 'border-geek-danger' : 'border-geek-border'
           } ${className}`}
           aria-invalid={error ? 'true' : undefined}
-          aria-describedby={error ? `${inputId}-error` : undefined}
+          aria-describedby={descriptionId}
           {...props}
         />
         {error && (
           <p id={`${inputId}-error`} className="mt-1 text-sm text-geek-danger" role="alert">
             {error}
+          </p>
+        )}
+        {helperText && !error && (
+          <p id={`${inputId}-helper`} className="mt-1 text-sm text-geek-text-secondary">
+            {helperText}
           </p>
         )}
       </div>

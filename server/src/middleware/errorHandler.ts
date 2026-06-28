@@ -6,7 +6,7 @@ import { error } from '../lib/response.js';
 import { recordFailure } from './circuitBreaker.js';
 import { QueueFullError, QueryTimeoutError } from '../db/queue.js';
 
-export function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   if (err instanceof QueueFullError) {
     res.status(503).json(error('QUEUE_FULL', err.message));
     recordFailure();

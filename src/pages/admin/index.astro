@@ -1,12 +1,33 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { Card } from '@/shared/ui';
 import { AdminPanel } from '@/widgets/admin-panel';
+import { loadPageData } from '@/shared/lib';
 
-const response = await fetch(apiUrl('/admin/stats')).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const apiData = json?.data || null;
-const stats = apiData?.counts || apiData || null;
+type AdminStats = {
+  users?: number;
+  activeUsers?: number;
+  publishedArticles?: number;
+  universes?: number;
+  comments?: number;
+  theories?: number;
+  pendingRevisions?: number;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isAdminStats(value: unknown): value is AdminStats {
+  return isRecord(value);
+}
+
+const apiData = await loadPageData<unknown>('/admin/stats', null);
+const stats: AdminStats | null = isRecord(apiData) && isAdminStats(apiData.counts)
+  ? apiData.counts
+  : isAdminStats(apiData)
+    ? apiData
+    : null;
 ---
 
 <MainLayout title="Panel Admin" description="Panel de administración de NexoGeek" noindex={true}>

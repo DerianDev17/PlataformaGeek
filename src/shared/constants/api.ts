@@ -5,8 +5,11 @@ export function apiUrl(path: string): string {
   return `${HOST}${API}${path}`;
 }
 
-export function fetchApi<T = unknown>(path: string): Promise<{ success: boolean; data: T; message?: string } | null> {
-  return fetch(apiUrl(path))
-    .then(r => r.ok ? r.json() : null)
-    .catch(() => null);
+export async function fetchApi<T = unknown>(path: string): Promise<{ success: boolean; data: T; message?: string } | null> {
+  try {
+    const response = await fetch(apiUrl(path));
+    return response.ok ? await response.json() : null;
+  } catch {
+    return null;
+  }
 }

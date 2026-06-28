@@ -1,19 +1,20 @@
 ---
-import { apiUrl } from '@/shared/constants';import MainLayout from '@/layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import { UniverseBrowser } from '@/widgets/universe-browser';
 import {
   EXPLORE_CATEGORIES,
   FALLBACK_UNIVERSES,
   getUniverseTotals,
   normalizeUniverseForShowcase,
+  type ShowcaseUniverse,
 } from '@/shared/constants';
 import { ROUTES } from '@/shared/constants';
+import { loadPageCollection } from '@/shared/lib';
+import type { Universe } from '@/entities/universe';
 
-const response = await fetch(apiUrl('/universos?limit=50')).catch(() => null);
-const json = response?.ok ? await response.json().catch(() => null) : null;
-const apiUniverses = Array.isArray(json?.data?.data) ? json.data.data : [];
-const universes = apiUniverses.length > 0
-  ? apiUniverses.map((universe: any, index: number) => normalizeUniverseForShowcase(universe, index))
+const apiUniverses = await loadPageCollection<Universe>('/universes?limit=50');
+const universes: ShowcaseUniverse[] = apiUniverses.length > 0
+  ? apiUniverses.map((universe, index) => normalizeUniverseForShowcase(universe, index))
   : FALLBACK_UNIVERSES;
 
 const totals = getUniverseTotals(universes);

@@ -39,6 +39,7 @@ export default function CreateArticleForm() {
   const [previewMode, setPreviewMode] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const [coverImageError, setCoverImageError] = useState(false);
 
   // Fetched data
   const [universes, setUniverses] = useState<UniverseOption[]>([]);
@@ -55,6 +56,10 @@ export default function CreateArticleForm() {
       window.location.replace(loginRedirectPath);
     }
   }, [authLoading, isAuthenticated, loginRedirectPath]);
+
+  useEffect(() => {
+    setCoverImageError(false);
+  }, [coverImage]);
 
   // Load draft from localStorage
   useEffect(() => {
@@ -390,13 +395,13 @@ export default function CreateArticleForm() {
                 placeholder="https://ejemplo.com/imagen.jpg"
                 type="url"
               />
-              {coverImage && coverImage.startsWith('http') && (
+              {coverImage && coverImage.startsWith('http') && !coverImageError && (
                 <div className="mt-2 rounded-lg overflow-hidden border border-geek-border w-48">
                   <img
                     src={coverImage}
                     alt="Preview"
                     className="w-full h-24 object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    onError={() => setCoverImageError(true)}
                   />
                 </div>
               )}
@@ -649,8 +654,13 @@ export default function CreateArticleForm() {
                   </Badge>
                 </div>
 
-                {coverImage && (
-                  <img src={coverImage} alt={`Portada de ${title || 'artículo'}`} className="w-full h-48 object-cover rounded-lg mb-3" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                {coverImage && !coverImageError && (
+                  <img
+                    src={coverImage}
+                    alt={`Portada de ${title || 'artículo'}`}
+                    className="w-full h-48 object-cover rounded-lg mb-3"
+                    onError={() => setCoverImageError(true)}
+                  />
                 )}
 
                 <div className="flex flex-wrap gap-2 mb-3">
