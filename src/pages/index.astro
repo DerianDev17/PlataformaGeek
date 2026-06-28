@@ -1,0 +1,79 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { HeroHome } from '@/widgets/hero-home';
+import { UniverseShowcase } from '@/widgets/universe-showcase';
+import { FeaturedArticles } from '@/widgets/featured-articles';
+import { ActivityFeed } from '@/widgets/activity-feed';
+import { FALLBACK_HOME_DATA, ROUTES } from '@/shared/constants';
+
+const response = await fetch('http://localhost:4321/api/home').catch(() => null);
+const homeData = response?.ok ? await response.json().catch(() => null) : null;
+const data = homeData?.success ? homeData.data : null;
+
+const stats = data?.stats?.articles > 0 ? data.stats : FALLBACK_HOME_DATA.stats;
+const universes = data?.featuredUniverses?.length ? data.featuredUniverses : FALLBACK_HOME_DATA.featuredUniverses;
+const trendingArticles = data?.trendingArticles?.length ? data.trendingArticles : FALLBACK_HOME_DATA.trendingArticles;
+const recentArticles = data?.recentArticles?.length ? data.recentArticles : FALLBACK_HOME_DATA.recentArticles;
+const topContributors = data?.topContributors?.length ? data.topContributors : FALLBACK_HOME_DATA.topContributors;
+const allArticles = [
+  ...trendingArticles,
+  ...recentArticles.filter((article: any) => !trendingArticles.find((trending: any) => trending.id === article.id)),
+];
+const activityData = {
+  ...FALLBACK_HOME_DATA,
+  stats,
+  featuredUniverses: universes,
+  trendingArticles,
+  recentArticles,
+  topContributors,
+};
+---
+
+<MainLayout title="Inicio" description="Explora el multiverso geek en NexoGeek, la wiki colaborativa de anime, comics, videojuegos y cultura pop">
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div class="min-w-0">
+      <HeroHome stats={stats} client:load />
+
+      <UniverseShowcase universes={universes} client:load />
+
+      <FeaturedArticles articles={allArticles.slice(0, 6)} client:load />
+
+      <section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div class="relative overflow-hidden rounded-lg border border-geek-accent/20 bg-gradient-to-r from-geek-accent/28 via-geek-accent/12 to-geek-accent-secondary/10 p-6">
+          <div class="absolute inset-0 bg-[url('/images/home/cyber-editor.webp')] bg-cover bg-center opacity-10" aria-hidden="true"></div>
+          <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-4">
+              <div class="grid h-14 w-14 flex-shrink-0 place-items-center rounded-lg border border-geek-accent/30 bg-geek-dark/50 text-geek-accent">
+                <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z"></path>
+                  <path d="m12 7 4.5 2.5v5L12 17l-4.5-2.5v-5L12 7Z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="font-heading text-lg font-bold text-white">Unete a la comunidad y desbloquea mas</h2>
+                <p class="mt-1 text-sm text-geek-text-secondary">Crea, participa y sube de nivel en NexoGeek.</p>
+              </div>
+            </div>
+            <a href={ROUTES.REGISTER} class="inline-flex h-10 items-center justify-center rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent">
+              Unirme ahora
+            </a>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-4 rounded-lg border border-geek-border bg-geek-dark-secondary/75 p-6">
+          <div>
+            <h2 class="font-heading text-lg font-bold text-white">Eres nuevo aqui?</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">Descubre como funciona NexoGeek.</p>
+          </div>
+          <a href="/guias" class="inline-flex h-10 flex-shrink-0 items-center justify-center rounded-lg border border-geek-border bg-geek-dark-tertiary px-4 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/60">
+            Guia rapida
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <div class="min-w-0">
+      <ActivityFeed data={activityData} client:load />
+    </div>
+  </div>
+</MainLayout>

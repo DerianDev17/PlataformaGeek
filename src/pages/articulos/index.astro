@@ -1,0 +1,40 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardImage, CardTitle, CardDescription, Badge } from '@/shared/ui';
+import { ROUTES } from '@/shared/constants';
+import { formatDate } from '@/shared/lib';
+
+const response = await fetch('http://localhost:4321/api/articles').catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const articles = json?.data?.data || [];
+---
+
+<MainLayout title="Artículos" description="Lee artículos de la comunidad geek">
+  <h1 class="text-3xl font-bold text-geek-text font-heading mb-8">Artículos</h1>
+
+  {
+    articles.length === 0 ? (
+      <div class="text-center py-16 text-geek-text-secondary">
+        <p class="text-lg">No hay artículos publicados</p>
+        <p class="text-sm mt-2">Sé el primero en escribir un artículo para la comunidad</p>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {articles.map((article: any) => (
+          <a href={ROUTES.ARTICLE_DETAIL(article.slug)}>
+            <Card hover>
+              {article.coverImage && <CardImage src={article.coverImage} alt={article.title} />}
+              <CardTitle>{article.title}</CardTitle>
+              <CardDescription>{article.summary}</CardDescription>
+              <div class="flex flex-wrap items-center gap-2 mt-3 text-xs text-geek-text-secondary">
+                {article.universe && <Badge variant="info" size="sm">{article.universe.name}</Badge>}
+                <span>{article.views} vistas</span>
+                <span>{formatDate(article.publishedAt || article.createdAt)}</span>
+              </div>
+            </Card>
+          </a>
+        ))}
+      </div>
+    )
+  }
+</MainLayout>

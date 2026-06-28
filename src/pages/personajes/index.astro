@@ -1,0 +1,244 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import {
+  CHARACTER_RELATIONS,
+  FALLBACK_CHARACTERS,
+  HOME_IMAGES,
+  ROUTES,
+  normalizeCharacterForShowcase,
+} from '@/shared/constants';
+
+const response = await fetch('http://localhost:4321/api/characters?limit=50').catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const apiCharacters = Array.isArray(json?.data?.data) ? json.data.data : [];
+const normalizedApiCharacters = apiCharacters.map((character: any, index: number) => normalizeCharacterForShowcase(character, index));
+const characterMap = new Map(FALLBACK_CHARACTERS.map((character) => [character.slug, character]));
+for (const character of normalizedApiCharacters) {
+  characterMap.set(character.slug, character);
+}
+
+const characters = [...characterMap.values()].sort((a, b) => b.articleCount - a.articleCount);
+const heroCharacter = characters.find((character) => character.slug === 'darth-vader') || characters[0];
+const featuredCharacters = ['doctor-doom', 'goku', 'spider-man', 'naruto-uzumaki']
+  .map((slug) => characters.find((character) => character.slug === slug))
+  .filter(Boolean);
+const universeStats = [...characters.reduce((map, character) => {
+  const current = map.get(character.universe.slug) || { name: character.universe.name, slug: character.universe.slug, count: 0 };
+  current.count += 1;
+  map.set(character.universe.slug, current);
+  return map;
+}, new Map<string, { name: string; slug: string; count: number }>()).values()]
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 6);
+const laneStats = ['Heroe', 'Villano', 'Rival', 'Antiheroe'].map((lane) => ({
+  label: lane,
+  count: characters.filter((character) => character.alignment === lane || character.role === lane).length,
+}));
+const totalArticles = characters.reduce((sum, character) => sum + character.articleCount, 0);
+---
+
+<MainLayout title="Personajes" description="Explora fichas, relaciones y perfiles clave del multiverso geek">
+  <section class="relative overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary">
+    <img
+      src={HOME_IMAGES.contactSheet}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover opacity-40"
+      loading="eager"
+      aria-hidden="true"
+    />
+    <div class="absolute inset-0 bg-gradient-to-r from-geek-dark via-geek-dark/88 to-geek-dark/48" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-geek-dark-secondary to-transparent" aria-hidden="true"></div>
+
+    <div class="relative grid min-h-[390px] gap-6 p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:p-10">
+      <div class="flex max-w-3xl flex-col justify-center">
+        <span class="mb-4 inline-flex w-fit rounded-lg border border-geek-accent/30 bg-geek-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-geek-accent">
+          Archivo de fichas
+        </span>
+        <h1 class="text-4xl font-bold leading-tight text-white md:text-6xl">Personajes</h1>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-geek-text-secondary md:text-lg">
+          Consulta heroes, villanos, rivales y figuras clave por universo. Cada ficha esta pensada para conectar
+          relaciones, articulos y debates sin repetir la experiencia de explorar.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a
+            href="#catalogo"
+            class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent"
+          >
+            Ver catalogo
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          <a
+            href={ROUTES.UNIVERSES}
+            class="inline-flex h-11 items-center rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent"
+          >
+            Cruzar universos
+          </a>
+        </div>
+      </div>
+
+      <aside class="self-end rounded-lg border border-geek-border bg-geek-dark/76 p-4 backdrop-blur">
+        <p class="text-xs uppercase tracking-wide text-geek-text-secondary">Ficha en foco</p>
+        <div class="mt-3 flex gap-4">
+          <img src={heroCharacter.imageUrl} alt={heroCharacter.name} class="h-24 w-24 rounded-lg object-cover" />
+          <div class="min-w-0">
+            <h2 class="truncate text-xl font-bold text-white">{heroCharacter.name}</h2>
+            <p class="mt-1 text-sm text-geek-accent">{heroCharacter.alias}</p>
+            <p class="mt-2 line-clamp-2 text-sm leading-5 text-geek-text-secondary">{heroCharacter.description}</p>
+          </div>
+        </div>
+        <div class="mt-4 grid grid-cols-3 gap-2">
+          <span class="rounded-lg border border-geek-border bg-geek-dark-secondary/80 p-3">
+            <span class="block text-lg font-bold text-geek-text">{heroCharacter.powerScale}</span>
+            <span class="text-[11px] uppercase tracking-wide text-geek-text-secondary">Escala</span>
+          </span>
+          <span class="rounded-lg border border-geek-border bg-geek-dark-secondary/80 p-3">
+            <span class="block text-lg font-bold text-geek-text">{heroCharacter.articleCount}</span>
+            <span class="text-[11px] uppercase tracking-wide text-geek-text-secondary">Articulos</span>
+          </span>
+          <span class="rounded-lg border border-geek-border bg-geek-dark-secondary/80 p-3">
+            <span class="block text-lg font-bold text-geek-text">{heroCharacter.role}</span>
+            <span class="text-[11px] uppercase tracking-wide text-geek-text-secondary">Rol</span>
+          </span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Resumen de personajes">
+    <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+      <span class="block text-2xl font-bold text-white">{characters.length}</span>
+      <span class="text-sm text-geek-text-secondary">Fichas disponibles</span>
+    </div>
+    <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+      <span class="block text-2xl font-bold text-white">{universeStats.length}</span>
+      <span class="text-sm text-geek-text-secondary">Universos conectados</span>
+    </div>
+    <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+      <span class="block text-2xl font-bold text-white">{totalArticles.toLocaleString('es-ES')}</span>
+      <span class="text-sm text-geek-text-secondary">Articulos asociados</span>
+    </div>
+    <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+      <span class="block text-2xl font-bold text-white">{CHARACTER_RELATIONS.length}</span>
+      <span class="text-sm text-geek-text-secondary">Relaciones destacadas</span>
+    </div>
+  </section>
+
+  <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div class="min-w-0 space-y-8">
+      <section>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Personajes en foco</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">Perfiles que sirven como entrada rapida a conflictos, equipos y cronologias.</p>
+          </div>
+          <a href={ROUTES.CREATE_ARTICLE} class="text-sm font-semibold text-geek-accent transition-colors hover:text-geek-accent-secondary">Crear ficha</a>
+        </div>
+
+        <div class="grid gap-4 lg:grid-cols-4">
+          {featuredCharacters.map((character: any, index: number) => (
+            <a
+              href={ROUTES.CHARACTER_DETAIL(character.slug)}
+              class:list={[
+                'group overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent',
+                index === 0 ? 'lg:col-span-2 lg:row-span-2' : '',
+              ]}
+            >
+              <div class:list={['relative overflow-hidden', index === 0 ? 'aspect-[16/11]' : 'aspect-[16/12]']}>
+                <img src={character.imageUrl} alt={character.name} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-geek-dark-secondary via-geek-dark-secondary/30 to-transparent" aria-hidden="true"></div>
+                <span class="absolute left-3 top-3 rounded-md border border-geek-accent/35 bg-geek-accent/15 px-2.5 py-1 text-xs font-semibold text-geek-accent-secondary">
+                  {character.role}
+                </span>
+              </div>
+              <div class="p-4">
+                <h3 class="text-xl font-bold text-white group-hover:text-geek-accent-secondary">{character.name}</h3>
+                <p class="mt-1 text-sm font-semibold text-geek-accent">{character.universe.name}</p>
+                <p class="mt-2 line-clamp-2 text-sm leading-6 text-geek-text-secondary">{character.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section id="catalogo">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Catalogo de personajes</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">Ordenado por actividad editorial y cantidad de articulos conectados.</p>
+          </div>
+          <span class="rounded-md border border-geek-border bg-geek-dark-secondary px-3 py-1 text-sm text-geek-text-secondary">
+            {characters.length} resultados
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+          {characters.map((character) => (
+            <a href={ROUTES.CHARACTER_DETAIL(character.slug)} class="group grid grid-cols-[96px_minmax(0,1fr)] gap-4 rounded-lg border border-geek-border bg-geek-dark-secondary p-3 transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent">
+              <img src={character.imageUrl} alt={character.name} class="h-28 w-full rounded-md object-cover" loading="lazy" />
+              <span class="min-w-0">
+                <span class="flex flex-wrap items-center gap-2">
+                  <span class="truncate text-lg font-bold text-white group-hover:text-geek-accent-secondary">{character.name}</span>
+                  <span class="rounded-md bg-geek-accent/10 px-2 py-0.5 text-xs font-semibold text-geek-accent">{character.powerScale}</span>
+                </span>
+                {character.alias && <span class="mt-0.5 block truncate text-sm text-geek-text-secondary">{character.alias}</span>}
+                <span class="mt-2 block line-clamp-2 text-sm leading-5 text-geek-text-secondary">{character.description}</span>
+                <span class="mt-3 flex flex-wrap gap-2 text-xs text-geek-text-secondary">
+                  <span>{character.universe.name}</span>
+                  <span>{character.articleCount} articulos</span>
+                  <span>{character.alignment}</span>
+                </span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <aside class="space-y-4 xl:sticky xl:top-24 xl:self-start">
+      <section class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <h2 class="text-base font-bold text-white">Indice por universo</h2>
+        <div class="mt-4 space-y-2">
+          {universeStats.map((universe) => (
+            <a href={ROUTES.UNIVERSE_DETAIL(universe.slug)} class="flex items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-geek-border hover:bg-geek-dark">
+              <span class="text-sm font-semibold text-geek-text">{universe.name}</span>
+              <span class="rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">{universe.count}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <h2 class="text-base font-bold text-white">Roles activos</h2>
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          {laneStats.map((item) => (
+            <span class="rounded-lg border border-geek-border bg-geek-dark p-3">
+              <span class="block text-xl font-bold text-white">{item.count}</span>
+              <span class="text-xs text-geek-text-secondary">{item.label}</span>
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <h2 class="text-base font-bold text-white">Relaciones destacadas</h2>
+        <div class="mt-4 space-y-3">
+          {CHARACTER_RELATIONS.map((relation) => {
+            const from = characters.find((character) => character.slug === relation.from);
+            const to = characters.find((character) => character.slug === relation.to);
+            return (
+              <a href={from ? ROUTES.CHARACTER_DETAIL(from.slug) : ROUTES.CHARACTERS} class="block rounded-lg border border-geek-border bg-geek-dark p-3 transition-colors hover:border-geek-accent/60">
+                <span class="block text-sm font-bold text-white">{relation.label}</span>
+                <span class="mt-1 block text-xs font-semibold uppercase tracking-wide text-geek-accent">
+                  {from?.name || relation.from} / {to?.name || relation.to}
+                </span>
+                <span class="mt-2 block text-sm leading-5 text-geek-text-secondary">{relation.description}</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    </aside>
+  </div>
+</MainLayout>

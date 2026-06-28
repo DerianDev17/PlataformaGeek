@@ -1,0 +1,94 @@
+---
+import Sidebar from '@/shared/ui/Sidebar';
+import { ToastProvider } from '@/shared/ui';
+import '@/shared/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  noindex?: boolean;
+}
+
+const { title, description, ogImage, noindex } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = ogImage || '/images/home/hero-multiverse.webp';
+const siteName = 'NexoGeek';
+const fullTitle = `${title} | ${siteName}`;
+const desc = description || 'La wiki colaborativa geek';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImageUrl, Astro.site)} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="es_ES" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={new URL(ogImageUrl, Astro.site)} />
+
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" /></noscript>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: Astro.site,
+      description: 'La wiki colaborativa donde los fans crean, debaten y comparten conocimiento sobre sus universos favoritos.',
+      inLanguage: 'es',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: new URL('/buscar?q={search_term_string}', Astro.site).toString(),
+        },
+        'query-input': 'required name=search_term_string',
+      },
+    })} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: siteName,
+      url: Astro.site,
+      logo: new URL('/favicon.svg', Astro.site).toString(),
+    })} />
+
+    <slot name="head" />
+  </head>
+  <body class="bg-geek-dark text-geek-text font-body antialiased">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-geek-accent focus:text-white focus:rounded-lg">
+      Saltar al contenido principal
+    </a>
+    <ToastProvider client:load>
+      <Sidebar client:load>
+        <slot />
+      </Sidebar>
+    </ToastProvider>
+  </body>
+</html>

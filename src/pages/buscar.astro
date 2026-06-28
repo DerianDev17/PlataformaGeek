@@ -1,0 +1,19 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { ExploreHub } from '@/widgets/explore-hub';
+import { FALLBACK_UNIVERSES, normalizeUniverseForShowcase } from '@/shared/constants';
+
+const response = await fetch('http://localhost:4321/api/universes?limit=50').catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const apiUniverses = Array.isArray(json?.data?.data) ? json.data.data : [];
+const universes = apiUniverses.length > 0
+  ? apiUniverses.map((universe: any, index: number) => normalizeUniverseForShowcase(universe, index))
+  : FALLBACK_UNIVERSES;
+
+const initialQuery = Astro.url.searchParams.get('q') || '';
+const initialCategory = Astro.url.searchParams.get('categoria') || '';
+---
+
+<MainLayout title="Buscar" description="Busca contenido geek en NexoGeek">
+  <ExploreHub universes={universes} initialQuery={initialQuery} initialCategory={initialCategory} client:load />
+</MainLayout>

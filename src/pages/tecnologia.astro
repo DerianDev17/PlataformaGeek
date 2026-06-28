@@ -1,0 +1,139 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import {
+  HOME_IMAGES,
+  ROUTES,
+  TECHNOLOGY_PAGE_STATS,
+  TECHNOLOGY_RADAR,
+  TECHNOLOGY_SPOTLIGHTS,
+  TECHNOLOGY_WORKFLOWS,
+} from '@/shared/constants';
+
+const leadTech = TECHNOLOGY_SPOTLIGHTS[0];
+---
+
+<MainLayout title="Tecnologia" description="IA, cybercultura, hardware ficticio y tecnologia geek en NexoGeek">
+  <section class="relative overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary">
+    <img src={HOME_IMAGES.articles[0]} alt="" class="absolute inset-0 h-full w-full object-cover opacity-44" loading="eager" aria-hidden="true" />
+    <div class="absolute inset-0 bg-gradient-to-r from-geek-dark via-geek-dark/86 to-geek-dark/36" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-geek-dark-secondary to-transparent" aria-hidden="true"></div>
+
+    <div class="relative grid min-h-[410px] gap-6 p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_380px] xl:p-10">
+      <div class="flex max-w-3xl flex-col justify-center">
+        <span class="mb-4 inline-flex w-fit rounded-lg border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cyan-100">
+          IA, hardware y cultura digital
+        </span>
+        <h1 class="text-4xl font-bold leading-tight text-white md:text-6xl">Tecnologia</h1>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-geek-text-secondary md:text-lg">
+          Analisis y guias para temas donde la tecnologia cruza con ficcion, videojuegos, cultura pop,
+          IA, hardware y futuros especulativos.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#analisis" class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Ver analisis
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          <a href={ROUTES.UNIVERSE_DETAIL('cyberpunk')} class="inline-flex h-11 items-center rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Abrir Cyberpunk
+          </a>
+        </div>
+      </div>
+
+      <aside class="self-end rounded-lg border border-geek-border bg-geek-dark/76 p-4 backdrop-blur">
+        <p class="text-xs uppercase tracking-wide text-geek-text-secondary">Tema principal</p>
+        <img src={leadTech.image} alt={leadTech.title} class="mt-3 aspect-[16/9] w-full rounded-lg object-cover" />
+        <h2 class="mt-4 text-xl font-bold text-white">{leadTech.title}</h2>
+        <p class="mt-2 text-sm leading-6 text-geek-text-secondary">{leadTech.summary}</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">{leadTech.format}</span>
+          <span class="rounded-md border border-geek-border bg-geek-dark-secondary px-2 py-1 text-xs text-geek-text-secondary">{leadTech.tag}</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Metricas de tecnologia">
+    {TECHNOLOGY_PAGE_STATS.map((stat) => (
+      <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <span class="block text-2xl font-bold text-white">{stat.value}</span>
+        <span class="block text-sm font-semibold text-geek-text">{stat.label}</span>
+        <span class="mt-1 block text-sm text-geek-text-secondary">{stat.detail}</span>
+      </div>
+    ))}
+  </section>
+
+  <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div class="min-w-0 space-y-8">
+      <section id="analisis">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Analisis destacados</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">Tecnologia explicada desde universos, personajes y tendencias de cultura digital.</p>
+          </div>
+          <a href={`${ROUTES.SEARCH}?q=tecnologia`} class="text-sm font-semibold text-geek-accent transition-colors hover:text-geek-accent-secondary">Buscar tecnologia</a>
+        </div>
+
+        <div class="grid gap-4 lg:grid-cols-3">
+          {TECHNOLOGY_SPOTLIGHTS.map((item) => (
+            <a href={item.href} class="group overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent">
+              <div class="relative aspect-[16/10] overflow-hidden">
+                <img src={item.image} alt={item.title} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-geek-dark-secondary via-geek-dark-secondary/25 to-transparent" aria-hidden="true"></div>
+                <span class="absolute left-3 top-3 rounded-md border border-geek-border bg-geek-dark/78 px-2.5 py-1 text-xs font-semibold text-geek-text">{item.universe}</span>
+              </div>
+              <div class="p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-cyan-100">{item.format}</p>
+                <h3 class="mt-1 line-clamp-2 text-lg font-bold text-white group-hover:text-geek-accent-secondary">{item.title}</h3>
+                <p class="mt-2 line-clamp-3 text-sm leading-6 text-geek-text-secondary">{item.summary}</p>
+                <span class="mt-4 inline-flex rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">{item.tag}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div class="mb-4">
+          <h2 class="text-2xl font-bold text-white">Metodo editorial</h2>
+          <p class="mt-1 text-sm text-geek-text-secondary">Como separar explicacion tecnica, ficcion y relevancia cultural.</p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-2">
+          {TECHNOLOGY_WORKFLOWS.map((step) => (
+            <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+              <div class="flex items-start gap-4">
+                <span class="grid h-11 w-11 flex-shrink-0 place-items-center rounded-lg border border-cyan-300/30 bg-cyan-300/10 font-mono text-sm font-bold text-cyan-100">{step.step}</span>
+                <div>
+                  <h3 class="text-lg font-bold text-white">{step.title}</h3>
+                  <p class="mt-1 text-sm leading-6 text-geek-text-secondary">{step.detail}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <aside class="space-y-4 xl:sticky xl:top-24 xl:self-start">
+      <section class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <h2 class="text-base font-bold text-white">Radar tech</h2>
+        <div class="mt-4 space-y-2">
+          {TECHNOLOGY_RADAR.map((item) => (
+            <a href={item.href} class="flex items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-geek-border hover:bg-geek-dark">
+              <span class="text-sm font-semibold text-geek-text">{item.label}</span>
+              <span class="rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">{item.count}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <a href={ROUTES.CREATE_ARTICLE} class="block rounded-lg border border-geek-accent/30 bg-geek-accent/10 p-4 transition-colors hover:border-geek-accent/60 hover:bg-geek-accent/15">
+        <span class="text-base font-bold text-white">Publica un analisis</span>
+        <span class="mt-1 block text-sm text-geek-text-secondary">Explica IA, hardware, sistemas o tecnologia dentro de una saga.</span>
+        <span class="mt-4 inline-flex text-sm font-semibold text-geek-accent">Crear articulo</span>
+      </a>
+    </aside>
+  </div>
+</MainLayout>

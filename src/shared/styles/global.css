@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-geek-dark text-geek-text font-body antialiased;
+    min-width: 320px;
+    overflow-x: hidden;
+    color-scheme: dark;
+    background:
+      linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0, rgba(8, 10, 18, 0) 260px),
+      #080A12;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  :focus-visible {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media print {
+    nav, .sidebar { display: none !important; }
+    body { background: white; color: black; }
+    main, .main-content { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-[1540px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded bg-geek-dark-tertiary;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -1,0 +1,146 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { COLLABORATOR_PROFILES, HOME_IMAGES, RANKING_TIERS, ROUTES } from '@/shared/constants';
+
+const response = await fetch('http://localhost:4321/api/users/ranking').catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const users = json?.data || [];
+const rankingUsers = users.length > 0
+  ? users.map((user: any, index: number) => ({
+      username: user.username,
+      displayName: user.displayName || user.username,
+      role: `Nivel ${user.level || 1}`,
+      focus: 'Actividad reciente',
+      summary: `${user.articleCount || 0} articulos publicados y ${user.xp || 0} XP acumulados.`,
+      xp: user.xp || 0,
+      level: user.level || 1,
+      articleCount: user.articleCount || 0,
+      rank: index + 1,
+      badge: index === 0 ? 'Top' : 'XP',
+      href: ROUTES.PROFILE(user.username),
+    }))
+  : COLLABORATOR_PROFILES;
+const maxXp = Math.max(...rankingUsers.map((user: any) => Number(user.xp) || 0), 1);
+---
+
+<MainLayout title="Ranking" description="Top colaboradores, XP y niveles de la comunidad geek">
+  <section class="relative overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary">
+    <img src={HOME_IMAGES.hero} alt="" class="absolute inset-0 h-full w-full object-cover opacity-42" loading="eager" aria-hidden="true" />
+    <div class="absolute inset-0 bg-gradient-to-r from-geek-dark via-geek-dark/86 to-geek-dark/36" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-geek-dark-secondary to-transparent" aria-hidden="true"></div>
+
+    <div class="relative grid min-h-[360px] gap-6 p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:p-10">
+      <div class="flex max-w-3xl flex-col justify-center">
+        <span class="mb-4 inline-flex w-fit rounded-lg border border-geek-accent/30 bg-geek-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-geek-accent">
+          XP y contribuciones
+        </span>
+        <h1 class="text-4xl font-bold leading-tight text-white md:text-6xl">Ranking</h1>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-geek-text-secondary md:text-lg">
+          Tabla de progreso para reconocer articulos, revisiones, debates resueltos y aportes visuales de la comunidad.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#top" class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Ver top
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          <a href={ROUTES.COLLABORATORS} class="inline-flex h-11 items-center rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Ver colaboradores
+          </a>
+        </div>
+      </div>
+
+      <aside class="self-end rounded-lg border border-geek-border bg-geek-dark/76 p-4 backdrop-blur">
+        <p class="text-xs uppercase tracking-wide text-geek-text-secondary">Lider actual</p>
+        <div class="mt-4 flex items-center gap-4">
+          <span class="grid h-16 w-16 place-items-center rounded-full bg-geek-accent/15 text-2xl font-bold text-geek-accent">{rankingUsers[0]?.displayName?.slice(0, 1) || 'N'}</span>
+          <span>
+            <h2 class="text-2xl font-bold text-white">{rankingUsers[0]?.displayName}</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">@{rankingUsers[0]?.username}</p>
+          </span>
+        </div>
+        <div class="mt-5 grid grid-cols-3 gap-2 text-center">
+          <span class="rounded-lg border border-geek-border bg-geek-dark-secondary p-2">
+            <span class="block text-lg font-bold text-white">{rankingUsers[0]?.xp?.toLocaleString('en-US')}</span>
+            <span class="text-xs text-geek-text-secondary">XP</span>
+          </span>
+          <span class="rounded-lg border border-geek-border bg-geek-dark-secondary p-2">
+            <span class="block text-lg font-bold text-white">{rankingUsers[0]?.level}</span>
+            <span class="text-xs text-geek-text-secondary">nivel</span>
+          </span>
+          <span class="rounded-lg border border-geek-border bg-geek-dark-secondary p-2">
+            <span class="block text-lg font-bold text-white">{rankingUsers[0]?.articleCount}</span>
+            <span class="text-xs text-geek-text-secondary">posts</span>
+          </span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div class="min-w-0">
+      <section id="top">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Top colaboradores</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">Ordenado por XP, nivel y volumen de aportes.</p>
+          </div>
+          <a href={ROUTES.ACTIVITY} class="text-sm font-semibold text-geek-accent transition-colors hover:text-geek-accent-secondary">Ver actividad reciente</a>
+        </div>
+
+        <div class="space-y-3">
+          {rankingUsers.map((user: any) => {
+            const progress = Math.max(8, Math.round(((Number(user.xp) || 0) / maxXp) * 100));
+            return (
+              <a href={user.href || ROUTES.PROFILE(user.username)} class="group grid gap-4 rounded-lg border border-geek-border bg-geek-dark-secondary p-4 transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent md:grid-cols-[56px_56px_minmax(0,1fr)_150px]">
+                <span class="grid h-12 w-12 place-items-center rounded-lg border border-geek-border bg-geek-dark font-mono text-lg font-bold text-geek-accent">#{user.rank}</span>
+                <span class="grid h-12 w-12 place-items-center rounded-full bg-geek-accent/15 text-sm font-bold text-geek-accent">{user.displayName.slice(0, 1)}</span>
+                <span class="min-w-0">
+                  <span class="flex flex-wrap items-center gap-2">
+                    <span class="text-lg font-bold text-white group-hover:text-geek-accent-secondary">{user.displayName}</span>
+                    <span class="rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">{user.badge}</span>
+                  </span>
+                  <span class="mt-1 block text-sm text-geek-text-secondary">@{user.username} - {user.role}</span>
+                  <span class="mt-3 block h-2 overflow-hidden rounded-full bg-geek-dark">
+                    <span class="block h-full rounded-full bg-gradient-to-r from-geek-accent to-geek-accent-secondary" style={`width: ${progress}%`}></span>
+                  </span>
+                </span>
+                <span class="grid grid-cols-2 gap-2 text-sm md:block md:text-right">
+                  <span class="block rounded-lg border border-geek-border bg-geek-dark p-2">
+                    <span class="block font-bold text-white">{Number(user.xp || 0).toLocaleString('en-US')}</span>
+                    <span class="text-xs text-geek-text-secondary">XP</span>
+                  </span>
+                  <span class="mt-0 block rounded-lg border border-geek-border bg-geek-dark p-2 md:mt-2">
+                    <span class="block font-bold text-white">Nivel {user.level}</span>
+                    <span class="text-xs text-geek-text-secondary">{user.articleCount} articulos</span>
+                  </span>
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+
+    <aside class="space-y-4 xl:sticky xl:top-24 xl:self-start">
+      <section class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <h2 class="text-base font-bold text-white">Categorias</h2>
+        <div class="mt-4 space-y-2">
+          {RANKING_TIERS.map((tier) => (
+            <a href={tier.href} class="block rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-geek-border hover:bg-geek-dark">
+              <span class="block text-sm font-semibold text-geek-text">{tier.label}</span>
+              <span class="mt-1 block text-xs text-geek-text-secondary">{tier.detail}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <a href={ROUTES.CREATE_ARTICLE} class="block rounded-lg border border-geek-accent/30 bg-geek-accent/10 p-4 transition-colors hover:border-geek-accent/60 hover:bg-geek-accent/15">
+        <span class="text-base font-bold text-white">Sube en el ranking</span>
+        <span class="mt-1 block text-sm text-geek-text-secondary">Gana XP publicando guias, mejorando articulos o resolviendo debates.</span>
+        <span class="mt-4 inline-flex text-sm font-semibold text-geek-accent">Crear articulo</span>
+      </a>
+    </aside>
+  </div>
+</MainLayout>

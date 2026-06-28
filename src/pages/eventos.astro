@@ -1,0 +1,145 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import {
+  EVENT_CARDS,
+  EVENT_PAGE_STATS,
+  EVENT_RADAR,
+  EVENT_TRACKS,
+  HOME_IMAGES,
+  ROUTES,
+} from '@/shared/constants';
+
+const leadEvent = EVENT_CARDS[0];
+---
+
+<MainLayout title="Eventos" description="Agenda de convenciones, torneos, lecturas y actividades geek de NexoGeek">
+  <section class="relative overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary">
+    <img src={HOME_IMAGES.hero} alt="" class="absolute inset-0 h-full w-full object-cover opacity-46" loading="eager" aria-hidden="true" />
+    <div class="absolute inset-0 bg-gradient-to-r from-geek-dark via-geek-dark/84 to-geek-dark/34" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-geek-dark-secondary to-transparent" aria-hidden="true"></div>
+
+    <div class="relative grid min-h-[405px] gap-6 p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_380px] xl:p-10">
+      <div class="flex max-w-3xl flex-col justify-center">
+        <span class="mb-4 inline-flex w-fit rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-100">
+          Calendario de comunidad
+        </span>
+        <h1 class="text-4xl font-bold leading-tight text-white md:text-6xl">Eventos</h1>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-geek-text-secondary md:text-lg">
+          Agenda para convenciones, torneos, lecturas y mesas de teoria, con rutas para cubrir cada actividad desde la plataforma.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#agenda" class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Ver agenda
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          <a href={ROUTES.FORUMS} class="inline-flex h-11 items-center rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Proponer evento
+          </a>
+        </div>
+      </div>
+
+      <aside class="self-end overflow-hidden rounded-lg border border-geek-border bg-geek-dark/76 backdrop-blur">
+        <div class="relative aspect-[16/9] overflow-hidden">
+          <img src={leadEvent.image} alt={leadEvent.title} class="h-full w-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-geek-dark to-transparent" aria-hidden="true"></div>
+          <span class="absolute left-4 top-4 rounded-md bg-amber-300/15 px-2.5 py-1 text-xs font-bold text-amber-100">{leadEvent.type}</span>
+        </div>
+        <div class="p-4">
+          <p class="text-xs uppercase tracking-wide text-geek-text-secondary">Proximo evento</p>
+          <h2 class="mt-1 text-xl font-bold text-white">{leadEvent.title}</h2>
+          <p class="mt-2 text-sm leading-6 text-geek-text-secondary">{leadEvent.summary}</p>
+          <div class="mt-4 flex items-center justify-between rounded-lg border border-geek-border bg-geek-dark-secondary p-3">
+            <span class="text-sm font-semibold text-white">{leadEvent.day} {leadEvent.month}</span>
+            <span class="text-sm text-geek-text-secondary">{leadEvent.location}</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Metricas de eventos">
+    {EVENT_PAGE_STATS.map((stat) => (
+      <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <span class="block text-2xl font-bold text-white">{stat.value}</span>
+        <span class="block text-sm font-semibold text-geek-text">{stat.label}</span>
+        <span class="mt-1 block text-sm text-geek-text-secondary">{stat.detail}</span>
+      </div>
+    ))}
+  </section>
+
+  <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div class="min-w-0 space-y-8">
+      <section id="agenda">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Agenda geek</h2>
+            <p class="mt-1 text-sm text-geek-text-secondary">Eventos con fecha, tipo y ruta de seguimiento editorial.</p>
+          </div>
+          <a href={ROUTES.ACTIVITY} class="text-sm font-semibold text-geek-accent transition-colors hover:text-geek-accent-secondary">Ver actividad</a>
+        </div>
+
+        <div class="grid gap-4 lg:grid-cols-3">
+          {EVENT_CARDS.map((event) => (
+            <a href={event.href} class="group overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary transition-colors hover:border-geek-accent/70 focus-visible:ring-2 focus-visible:ring-geek-accent">
+              <div class="relative aspect-[16/10] overflow-hidden">
+                <img src={event.image} alt={event.title} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-geek-dark-secondary via-geek-dark-secondary/25 to-transparent" aria-hidden="true"></div>
+                <span class="absolute left-3 top-3 grid h-14 w-14 place-items-center rounded-lg border border-geek-border bg-geek-dark/82 text-center">
+                  <span>
+                    <span class="block text-xs font-semibold uppercase text-amber-100">{event.month}</span>
+                    <span class="block text-xl font-bold text-white">{event.day}</span>
+                  </span>
+                </span>
+              </div>
+              <div class="p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-amber-100">{event.type}</p>
+                <h3 class="mt-1 line-clamp-2 text-lg font-bold text-white group-hover:text-geek-accent-secondary">{event.title}</h3>
+                <p class="mt-2 text-sm text-geek-text-secondary">{event.location}</p>
+                <p class="mt-2 line-clamp-3 text-sm leading-6 text-geek-text-secondary">{event.summary}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div class="mb-4">
+          <h2 class="text-2xl font-bold text-white">Cobertura</h2>
+          <p class="mt-1 text-sm text-geek-text-secondary">Flujo para transformar un evento en contenido util.</p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-3">
+          {EVENT_TRACKS.map((track) => (
+            <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+              <span class="grid h-11 w-11 place-items-center rounded-lg border border-amber-300/30 bg-amber-300/10 font-mono text-sm font-bold text-amber-100">{track.step}</span>
+              <h3 class="mt-4 text-lg font-bold text-white">{track.title}</h3>
+              <p class="mt-2 text-sm leading-6 text-geek-text-secondary">{track.detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <aside class="space-y-4 xl:sticky xl:top-24 xl:self-start">
+      <section class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4">
+        <h2 class="text-base font-bold text-white">Radar de eventos</h2>
+        <div class="mt-4 space-y-2">
+          {EVENT_RADAR.map((item) => (
+            <a href={item.href} class="flex items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-geek-border hover:bg-geek-dark">
+              <span class="text-sm font-semibold text-geek-text">{item.label}</span>
+              <span class="rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">{item.count}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <a href={ROUTES.CREATE_ARTICLE} class="block rounded-lg border border-geek-accent/30 bg-geek-accent/10 p-4 transition-colors hover:border-geek-accent/60 hover:bg-geek-accent/15">
+        <span class="text-base font-bold text-white">Publica cobertura</span>
+        <span class="mt-1 block text-sm text-geek-text-secondary">Crea resumenes, galerias o guias despues de un evento.</span>
+        <span class="mt-4 inline-flex text-sm font-semibold text-geek-accent">Crear articulo</span>
+      </a>
+    </aside>
+  </div>
+</MainLayout>

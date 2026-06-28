@@ -1,0 +1,78 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Avatar, Badge, Card, CardTitle, CardDescription } from '@/shared/ui';
+import { ROUTES } from '@/shared/constants';
+import { formatDate } from '@/shared/lib';
+
+export async function getStaticPaths() {
+  return [
+    { params: { username: 'admin' } },
+    { params: { username: 'contributor' } },
+    { params: { username: 'moderator' } },
+    { params: { username: 'user' } },
+  ];
+}
+
+const { username } = Astro.params;
+
+const response = await fetch(`http://localhost:4321/api/users/${username}`).catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const profile = json?.data || null;
+
+if (!profile) {
+  return Astro.redirect('/404');
+}
+---
+
+<MainLayout title={`${profile.displayName || profile.username}`} description={profile.bio || `Perfil de ${profile.username}`}>
+  <div class="max-w-4xl">
+    <div class="flex flex-col sm:flex-row items-start gap-6 mb-10">
+      <Avatar src={profile.avatarUrl} alt={profile.displayName} size="lg" />
+      <div>
+        <h1 class="text-2xl font-bold text-geek-text font-heading">{profile.displayName}</h1>
+        <p class="text-geek-text-secondary">@{profile.username}</p>
+        {profile.bio && <p class="text-sm text-geek-text mt-3 max-w-lg">{profile.bio}</p>}
+        <div class="flex flex-wrap gap-2 mt-4">
+          <Badge variant="xp">{profile.xp} XP</Badge>
+          <Badge variant={profile.role === 'admin' ? 'danger' : profile.role === 'moderator' ? 'warning' : 'default'}>
+            {profile.role}
+          </Badge>
+        </div>
+        <div class="flex gap-4 mt-4 text-sm text-geek-text-secondary">
+          <span>{profile.articleCount} artículos</span>
+          <span>{profile.commentCount} comentarios</span>
+          <span>Nivel {profile.level}</span>
+          <span>Se unió {formatDate(profile.joinedAt)}</span>
+        </div>
+      </div>
+    </div>
+
+    {profile.badges?.length > 0 && (
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-geek-text font-heading mb-3">Insignias</h2>
+        <div class="flex flex-wrap gap-2">
+          {profile.badges.map((badge: string) => (
+            <Badge variant="success" size="md">{badge}</Badge>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {profile.contributions?.length > 0 && (
+      <div>
+        <h2 class="text-lg font-bold text-geek-text font-heading mb-4">Contribuciones</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {profile.contributions.map((article: any) => (
+            <a href={ROUTES.ARTICLE_DETAIL(article.slug)}>
+              <Card hover>
+                <CardTitle>{article.title}</CardTitle>
+                <CardDescription>{article.summary}</CardDescription>
+                <div class="text-xs text-geek-text-secondary mt-2">{formatDate(article.createdAt)}</div>
+              </Card>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</MainLayout>

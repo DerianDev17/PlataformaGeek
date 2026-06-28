@@ -1,0 +1,201 @@
+import { HOME_IMAGES } from './homeShowcase';
+
+export const MARVEL_UNIVERSE = {
+  id: 'marvel',
+  name: 'Marvel',
+  slug: 'marvel',
+  description:
+    'El universo cinematografico y de comics de Marvel. Hogar de los Vengadores, Spider-Man, X-Men, Doctor Doom y amenazas cosmicas del multiverso.',
+  coverImage: HOME_IMAGES.universes.marvel,
+  bannerImage: HOME_IMAGES.universes.marvel,
+  articleCount: 2345,
+  characterCount: 420,
+  theoryCount: 86,
+  category: 'comics',
+  status: 'Destacado',
+  momentum: '+18% esta semana',
+  editors: 92,
+  updatedAt: '2026-06-27T11:20:00.000Z',
+} as const;
+
+export const MARVEL_ARTICLES = [
+  {
+    id: 'doctor-doom',
+    title: 'Quien es Doctor Doom?',
+    slug: 'quien-es-doctor-doom',
+    summary: 'La historia completa de Victor Von Doom, uno de los villanos mas complejos de Marvel.',
+    coverImage: HOME_IMAGES.universes.marvel,
+    views: 18300,
+    createdAt: '2026-06-27T14:00:00.000Z',
+  },
+  {
+    id: 'cronologia-ucm',
+    title: 'Cronologia basica del UCM',
+    slug: 'cronologia-basica-del-ucm',
+    summary: 'Una guia para entender el orden temporal del Universo Cinematografico de Marvel.',
+    coverImage: HOME_IMAGES.articles[1],
+    views: 14100,
+    createdAt: '2026-06-26T19:20:00.000Z',
+  },
+  {
+    id: 'gemas-infinito',
+    title: 'Las gemas del infinito explicadas',
+    slug: 'las-gemas-del-infinito-explicadas',
+    summary: 'Que son, donde aparecieron y que poder tiene cada gema del infinito.',
+    coverImage: HOME_IMAGES.articles[2],
+    views: 12800,
+    createdAt: '2026-06-25T17:10:00.000Z',
+  },
+  {
+    id: 'vengadores-guia',
+    title: 'Los Vengadores: guia completa del equipo',
+    slug: 'los-vengadores-guia-completa-del-equipo',
+    summary: 'Historia, miembros principales y momentos clave del equipo de superheroes mas poderoso de la Tierra.',
+    coverImage: HOME_IMAGES.universes.marvel,
+    views: 11900,
+    createdAt: '2026-06-24T21:30:00.000Z',
+  },
+  {
+    id: 'spider-man-legado',
+    title: 'Spider-Man: historia y legado del trepamuros',
+    slug: 'spider-man-historia-y-legado-del-trepamuros',
+    summary: 'La evolucion de Peter Parker desde un adolescente mordido por una arana hasta uno de los heroes mas queridos.',
+    coverImage: HOME_IMAGES.articles[0],
+    views: 16600,
+    createdAt: '2026-06-23T16:40:00.000Z',
+  },
+  {
+    id: 'multiverso-marvel',
+    title: 'El multiverso Marvel explicado',
+    slug: 'el-multiverso-marvel-explicado',
+    summary: 'Como funciona el multiverso en Marvel: Tierras alternativas, realidades paralelas y variantes.',
+    coverImage: HOME_IMAGES.universes.marvel,
+    views: 15200,
+    createdAt: '2026-06-22T12:00:00.000Z',
+  },
+  {
+    id: 'thanos-plan-maestro',
+    title: 'Thanos: el Titan Loco y su plan maestro',
+    slug: 'thanos-el-titan-loco-y-su-plan-maestro',
+    summary: 'Analisis del villano mas temido del universo Marvel y su obsesion con las Gemas del Infinito.',
+    coverImage: HOME_IMAGES.articles[3],
+    views: 9700,
+    createdAt: '2026-06-21T15:15:00.000Z',
+  },
+];
+
+export const MARVEL_CHARACTERS = [
+  {
+    id: 'doctor-doom',
+    name: 'Doctor Doom',
+    slug: 'doctor-doom',
+    alias: 'Victor Von Doom',
+    imageUrl: HOME_IMAGES.universes.marvel,
+    description: 'Monarca de Latveria, genio cientifico y hechicero. Uno de los villanos mas peligrosos de Marvel.',
+  },
+  {
+    id: 'spider-man',
+    name: 'Spider-Man',
+    slug: 'spider-man',
+    alias: 'Peter Parker',
+    imageUrl: HOME_IMAGES.articles[0],
+    description: 'El trepamuros de Nueva York. Con grandes poderes vienen grandes responsabilidades.',
+  },
+  {
+    id: 'iron-man',
+    name: 'Iron Man',
+    slug: 'iron-man',
+    alias: 'Tony Stark',
+    imageUrl: HOME_IMAGES.articles[1],
+    description: 'Genio, multimillonario e inventor. El corazon tecnologico de los Vengadores.',
+  },
+  {
+    id: 'thor',
+    name: 'Thor',
+    slug: 'thor',
+    alias: 'Dios del Trueno',
+    imageUrl: HOME_IMAGES.articles[2],
+    description: 'Principe de Asgard y portador del poder del trueno.',
+  },
+  {
+    id: 'capitan-america',
+    name: 'Capitan America',
+    slug: 'capitan-america',
+    alias: 'Steve Rogers',
+    imageUrl: HOME_IMAGES.articles[3],
+    description: 'Supersoldado de la Segunda Guerra Mundial y lider moral de los Vengadores.',
+  },
+];
+
+export const MARVEL_THEORIES = [
+  {
+    id: 'proximo-villano-ucm',
+    title: 'Quien sera el proximo gran villano del UCM?',
+    slug: 'quien-sera-el-proximo-gran-villano-del-ucm',
+    content: 'Analisis de posibles candidatos para ser la proxima amenaza tras Kang: Doctor Doom, Galactus y mas.',
+    status: 'open',
+    votes: 318,
+    createdAt: '2026-06-26T18:30:00.000Z',
+    author: { username: 'TheDarkEditor', avatarUrl: null },
+  },
+  {
+    id: 'secret-wars-incursiones',
+    title: 'Secret Wars llegara por incursiones?',
+    slug: 'secret-wars-llegara-por-incursiones',
+    content: 'Teoria sobre como las realidades paralelas podrian colisionar en la Saga del Multiverso.',
+    status: 'debated',
+    votes: 246,
+    createdAt: '2026-06-25T12:15:00.000Z',
+    author: { username: 'LoreKeeper', avatarUrl: null },
+  },
+];
+
+export const MARVEL_EXPLORE_ITEMS = [
+  {
+    id: 'marvel-doctor-doom',
+    type: 'Personaje',
+    title: 'Doctor Doom',
+    eyebrow: 'Villanos Marvel',
+    summary: 'Victor Von Doom combina ciencia, magia y poder politico desde Latveria.',
+    href: '/personajes/doctor-doom',
+    image: HOME_IMAGES.universes.marvel,
+    category: 'comics',
+    metric: 'Perfil clave',
+    tag: 'Villano',
+  },
+  {
+    id: 'marvel-gemas-infinito',
+    type: 'Guia',
+    title: 'Gemas del Infinito',
+    eyebrow: 'Objetos cosmicos',
+    summary: 'Espacio, Tiempo, Realidad, Mente, Alma y Poder explicadas para entender la Saga del Infinito.',
+    href: '/articulos/las-gemas-del-infinito-explicadas',
+    image: HOME_IMAGES.articles[2],
+    category: 'comics',
+    metric: '12.8K vistas',
+    tag: 'Lore',
+  },
+  {
+    id: 'marvel-ucm-cronologia',
+    type: 'Guia',
+    title: 'Cronologia basica del UCM',
+    eyebrow: 'Marvel Studios',
+    summary: 'Orden temporal para seguir fases, sagas y eventos centrales del Universo Cinematografico de Marvel.',
+    href: '/articulos/cronologia-basica-del-ucm',
+    image: HOME_IMAGES.articles[1],
+    category: 'comics',
+    metric: '14.1K vistas',
+    tag: 'Canon',
+  },
+] as const;
+
+export function getMarvelUniverseDetail() {
+  return {
+    ...MARVEL_UNIVERSE,
+    category: 'comics',
+    status: 'Destacado',
+    recentArticles: MARVEL_ARTICLES,
+    featuredCharacters: MARVEL_CHARACTERS,
+    popularTheories: MARVEL_THEORIES,
+  };
+}

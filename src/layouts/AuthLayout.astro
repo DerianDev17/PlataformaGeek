@@ -1,0 +1,102 @@
+---
+import '@/shared/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, description, ogImage } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = ogImage || '/images/home/hero-multiverse.webp';
+const siteName = 'NexoGeek';
+const fullTitle = `${title} | ${siteName}`;
+const desc = description || 'Accede a NexoGeek';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImageUrl, Astro.site)} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="es_ES" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={new URL(ogImageUrl, Astro.site)} />
+
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" /></noscript>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: Astro.site,
+      description: 'La wiki colaborativa donde los fans crean, debaten y comparten conocimiento sobre sus universos favoritos.',
+      inLanguage: 'es',
+    })} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: siteName,
+      url: Astro.site,
+      logo: new URL('/favicon.svg', Astro.site).toString(),
+    })} />
+  </head>
+  <body class="bg-geek-dark text-geek-text font-body antialiased">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-geek-accent focus:px-4 focus:py-2 focus:text-white">
+      Saltar al contenido principal
+    </a>
+    <main
+      id="main-content"
+      class="min-h-screen bg-[radial-gradient(circle_at_top,rgba(124,58,237,0.16),transparent_34%),linear-gradient(180deg,#080b13_0%,#060811_100%)]"
+    >
+      <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-5 sm:px-6">
+        <header class="flex min-h-12 items-center justify-between gap-4">
+          <a href="/" class="flex min-w-0 items-center gap-3" aria-label="NexoGeek inicio">
+            <span class="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-geek-accent/15 text-geek-accent">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3Z" stroke="currentColor" stroke-width="2.2"></path>
+                <path d="M12 7.2 16.5 9.8v4.4L12 16.8l-4.5-2.6V9.8L12 7.2Z" fill="currentColor" opacity=".35"></path>
+              </svg>
+            </span>
+            <span class="font-heading text-lg font-bold uppercase tracking-wide text-white">
+              Nexo<span class="text-geek-accent">Geek</span>
+            </span>
+          </a>
+          <a href="/" class="rounded-lg border border-geek-border/80 bg-geek-dark-secondary/70 px-3 py-2 text-sm font-medium text-geek-text-secondary transition-colors hover:border-geek-accent/50 hover:text-geek-text focus-visible:ring-2 focus-visible:ring-geek-accent">
+            Inicio
+          </a>
+        </header>
+
+        <section class="flex flex-1 items-center justify-center py-10">
+          <slot />
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

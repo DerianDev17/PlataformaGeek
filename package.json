@@ -1,0 +1,48 @@
+{
+  "name": "nexogeek",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "dev:server": "cd server && npm run dev",
+    "dev:seed": "cd server && npm run seed",
+    "dev:all": "concurrently -n api,app -c blue,green \"npm run dev:server\" \"npm run dev\"",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "astro check",
+    "typecheck": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/tailwind": "^5.0.0",
+    "astro": "^7.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^3.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@playwright/test": "^1.48.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autocannon": "^8.0.0",
+    "concurrently": "^10.0.3",
+    "jsdom": "^25.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^2.1.0"
+  }
+}

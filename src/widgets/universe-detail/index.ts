@@ -1,0 +1,1 @@
+export { UniverseDetail } from './UniverseDetail';

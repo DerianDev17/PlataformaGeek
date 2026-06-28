@@ -1,0 +1,25 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { CreateArticleFormWithAuth } from '@/shared/ui/CreateArticleForm';
+---
+
+<MainLayout title="Crear articulo" description="Crea un nuevo articulo en la wiki colaborativa de NexoGeek">
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-8">
+      <div class="mb-2 flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-geek-accent to-geek-accent-secondary">
+          <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"></path>
+          </svg>
+        </div>
+        <h1 class="font-heading text-3xl font-bold text-geek-text">Crear articulo</h1>
+      </div>
+      <p class="max-w-2xl text-geek-text-secondary">
+        Comparte tu conocimiento con la comunidad. Escribe sobre tus universos, personajes y teorias favoritas.
+        Los articulos son revisados por moderadores antes de publicarse.
+      </p>
+    </div>
+
+    <CreateArticleFormWithAuth client:only="react" />
+  </div>
+</MainLayout>

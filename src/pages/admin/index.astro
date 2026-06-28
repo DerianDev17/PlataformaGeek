@@ -1,0 +1,69 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Badge, Card } from '@/shared/ui';
+
+const response = await fetch('http://localhost:4321/api/admin/stats').catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const apiData = json?.data || null;
+const stats = apiData?.counts || apiData || null;
+---
+
+<MainLayout title="Panel Admin" description="Panel de administración de NexoGeek" noindex={true}>
+  <h1 class="text-3xl font-bold text-geek-text font-heading mb-8">Panel de administración</h1>
+
+  {stats && (
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-10">
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Usuarios totales</p>
+        <p class="text-2xl font-bold text-geek-text mt-1">{stats?.users || 0}</p>
+      </Card>
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Activos</p>
+        <p class="text-2xl font-bold text-geek-text mt-1">{stats?.activeUsers || 0}</p>
+      </Card>
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Artículos</p>
+        <p class="text-2xl font-bold text-geek-text mt-1">{stats?.publishedArticles || 0}</p>
+      </Card>
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Universos</p>
+        <p class="text-2xl font-bold text-geek-text mt-1">{stats?.universes || 0}</p>
+      </Card>
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Comentarios</p>
+        <p class="text-2xl font-bold text-geek-text mt-1">{stats?.comments || 0}</p>
+      </Card>
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Teorías</p>
+        <p class="text-2xl font-bold text-geek-text mt-1">{stats?.theories || 0}</p>
+      </Card>
+      <Card>
+        <p class="text-sm text-geek-text-secondary">Pendientes de revisión</p>
+        <p class="text-2xl font-bold text-geek-warning mt-1">{stats?.pendingRevisions || 0}</p>
+      </Card>
+    </div>
+  )}
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <Card>
+      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Gestión de usuarios</h3>
+      <p class="text-sm text-geek-text-secondary mb-3">Administrar roles, suspensiones y ver actividad de usuarios.</p>
+      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
+    </Card>
+    <Card>
+      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Cola de revisión</h3>
+      <p class="text-sm text-geek-text-secondary mb-3">Revisar artículos y ediciones pendientes de aprobación.</p>
+      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
+    </Card>
+    <Card>
+      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Categorías</h3>
+      <p class="text-sm text-geek-text-secondary mb-3">Crear, editar y organizar categorías y subcategorías.</p>
+      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
+    </Card>
+    <Card>
+      <h3 class="text-lg font-semibold text-geek-text mb-4 font-heading">Reportes</h3>
+      <p class="text-sm text-geek-text-secondary mb-3">Ver reportes de contenido y comentarios marcados.</p>
+      <span class="text-sm text-geek-text-secondary/50">Próximamente</span>
+    </Card>
+  </div>
+</MainLayout>

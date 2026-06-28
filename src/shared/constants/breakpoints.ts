@@ -1,0 +1,8 @@
+export const BREAKPOINTS = {
+  MOBILE: 360,
+  MOBILE_LG: 390,
+  TABLET: 768,
+  LAPTOP: 1024,
+  DESKTOP: 1366,
+  DESKTOP_LG: 1920,
+} as const;

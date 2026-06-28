@@ -1,0 +1,174 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardTitle, CardDescription, Breadcrumb, Badge } from '@/shared/ui';
+import {
+  CHARACTER_RELATED_ARTICLES,
+  CHARACTER_RELATIONS,
+  FALLBACK_CHARACTERS,
+  ROUTES,
+  getFallbackCharacterBySlug,
+  normalizeCharacterForShowcase,
+} from '@/shared/constants';
+
+export async function getStaticPaths() {
+  const fallbackPaths = FALLBACK_CHARACTERS.map((character) => ({ params: { slug: character.slug } }));
+
+  try {
+    const response = await fetch('http://localhost:3001/api/characters?limit=50');
+    const json = response.ok ? await response.json() : null;
+    const characters = Array.isArray(json?.data?.data) ? json.data.data : [];
+    const apiPaths = characters.map((character: any) => ({ params: { slug: character.slug } }));
+    const merged = new Map([...fallbackPaths, ...apiPaths].map((path) => [path.params.slug, path]));
+    return [...merged.values()];
+  } catch {
+    return fallbackPaths;
+  }
+}
+
+const { slug } = Astro.params;
+
+function buildFallbackRelationships(characterSlug: string) {
+  return CHARACTER_RELATIONS.filter((relation) => relation.from === characterSlug || relation.to === characterSlug).map((relation) => {
+    const relatedSlug = relation.from === characterSlug ? relation.to : relation.from;
+    const relatedCharacter = getFallbackCharacterBySlug(relatedSlug);
+
+    return {
+      id: `${characterSlug}-${relatedSlug}`,
+      relationType: relation.type,
+      description: relation.description,
+      relatedCharacter: relatedCharacter
+        ? {
+            id: relatedCharacter.id,
+            name: relatedCharacter.name,
+            slug: relatedCharacter.slug,
+            imageUrl: relatedCharacter.imageUrl,
+          }
+        : null,
+    };
+  });
+}
+
+function buildFallbackCharacterDetail(character: any) {
+  const normalized = normalizeCharacterForShowcase(character);
+  const relatedArticles = CHARACTER_RELATED_ARTICLES[normalized.slug] || [
+    {
+      title: `Guia editorial de ${normalized.name}`,
+      slug: normalized.universe.slug,
+      summary: `Contexto, relaciones y articulos base para entender a ${normalized.name}.`,
+      universeFallback: true,
+    },
+  ];
+
+  return {
+    ...normalized,
+    universe: normalized.universe,
+    relationships: buildFallbackRelationships(normalized.slug),
+    articleCount: normalized.articleCount,
+    articles: relatedArticles,
+  };
+}
+
+const response = await fetch(`http://localhost:4321/api/characters/${slug}`).catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const apiCharacter = json?.data || null;
+const fallbackCharacter = getFallbackCharacterBySlug(slug);
+const character = apiCharacter
+  ? {
+      ...buildFallbackCharacterDetail(apiCharacter),
+      ...apiCharacter,
+      relationships: apiCharacter.relationships?.length ? apiCharacter.relationships : buildFallbackRelationships(apiCharacter.slug),
+      articles: apiCharacter.articles?.length ? apiCharacter.articles : CHARACTER_RELATED_ARTICLES[apiCharacter.slug] || [],
+      articleCount: apiCharacter.articleCount ?? fallbackCharacter?.articleCount ?? 0,
+    }
+  : fallbackCharacter
+    ? buildFallbackCharacterDetail(fallbackCharacter)
+    : null;
+
+if (!character) {
+  return Astro.redirect('/404');
+}
+---
+
+<MainLayout title={character.name} description={character.description}>
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: ROUTES.HOME },
+      { label: 'Personajes', href: ROUTES.CHARACTERS },
+      { label: character.name },
+    ]}
+  />
+
+  <div class="flex flex-col gap-8 md:flex-row">
+    <div class="flex-1">
+      <div class="mb-6 flex items-start gap-4">
+        {character.imageUrl && (
+          <img src={character.imageUrl} alt={character.name} class="h-24 w-24 rounded-xl object-cover" />
+        )}
+        <div>
+          <h1 class="font-heading text-3xl font-bold text-geek-text">{character.name}</h1>
+          {character.alias && <p class="mt-1 text-geek-text-secondary">{character.alias}</p>}
+          {character.universe && (
+            <a href={ROUTES.UNIVERSE_DETAIL(character.universe.slug)}>
+              <Badge variant="info" class="mt-2">{character.universe.name}</Badge>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div class="prose prose-invert mt-6 max-w-none leading-relaxed text-geek-text">
+        {character.description}
+      </div>
+
+      {character.relationships?.length > 0 && (
+        <div class="mt-8">
+          <h2 class="font-heading mb-4 text-xl font-bold text-geek-text">Relaciones</h2>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {character.relationships.map((rel: any) => (
+              <Card>
+                <p class="text-sm font-medium text-geek-text">{rel.relatedCharacter?.name || 'Desconocido'}</p>
+                <Badge size="sm" variant="default" class="mt-1">{rel.relationType}</Badge>
+                <p class="mt-1 text-xs text-geek-text-secondary">{rel.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {character.articles?.length > 0 && (
+        <div class="mt-8">
+          <h2 class="font-heading mb-4 text-xl font-bold text-geek-text">Articulos relacionados</h2>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {character.articles.map((article: any) => (
+              <a href={article.universeFallback ? ROUTES.UNIVERSE_DETAIL(article.slug) : ROUTES.ARTICLE_DETAIL(article.slug)}>
+                <Card hover>
+                  <CardTitle>{article.title}</CardTitle>
+                  <CardDescription>{article.summary}</CardDescription>
+                </Card>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <aside class="w-full flex-shrink-0 md:w-64">
+      <Card class="space-y-3">
+        <h3 class="text-sm font-semibold uppercase tracking-wider text-geek-text-secondary">Info</h3>
+        <div class="space-y-2 text-sm text-geek-text-secondary">
+          {character.universe && (
+            <div>
+              <span class="block text-xs uppercase tracking-wider">Universo</span>
+              <a href={ROUTES.UNIVERSE_DETAIL(character.universe.slug)} class="text-geek-accent hover:text-geek-accent-hover">
+                {character.universe.name}
+              </a>
+            </div>
+          )}
+          <div>
+            <span class="block text-xs uppercase tracking-wider">Articulos</span>
+            <span class="text-geek-text">{character.articleCount}</span>
+          </div>
+        </div>
+      </Card>
+    </aside>
+  </div>
+</MainLayout>

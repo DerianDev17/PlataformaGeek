@@ -1,0 +1,113 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { UniverseBrowser } from '@/widgets/universe-browser';
+import {
+  EXPLORE_CATEGORIES,
+  FALLBACK_UNIVERSES,
+  getUniverseTotals,
+  normalizeUniverseForShowcase,
+} from '@/shared/constants';
+import { ROUTES } from '@/shared/constants';
+
+const response = await fetch('http://localhost:4321/api/universes?limit=50').catch(() => null);
+const json = response?.ok ? await response.json().catch(() => null) : null;
+const apiUniverses = Array.isArray(json?.data?.data) ? json.data.data : [];
+const universes = apiUniverses.length > 0
+  ? apiUniverses.map((universe: any, index: number) => normalizeUniverseForShowcase(universe, index))
+  : FALLBACK_UNIVERSES;
+
+const totals = getUniverseTotals(universes);
+const featured = universes.find((universe) => universe.status === 'Destacado') || universes[0];
+const categoryHighlights = EXPLORE_CATEGORIES.filter((item) => item.value !== 'todos').slice(0, 5).map((item) => ({
+  ...item,
+  count: universes.filter((universe) => universe.category === item.value).length,
+}));
+---
+
+<MainLayout title="Universos" description="Explora universos geek, sagas, personajes, articulos y teorias en NexoGeek">
+  <section class="relative overflow-hidden rounded-lg border border-geek-border bg-geek-dark-secondary">
+    <img
+      src={featured.bannerImage}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover opacity-45"
+      aria-hidden="true"
+    />
+    <div class="absolute inset-0 bg-gradient-to-r from-geek-dark via-geek-dark/82 to-geek-dark/35" aria-hidden="true"></div>
+    <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-geek-dark-secondary to-transparent" aria-hidden="true"></div>
+
+    <div class="relative grid min-h-[360px] gap-6 p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:p-10">
+      <div class="flex max-w-3xl flex-col justify-center">
+        <span class="mb-4 inline-flex w-fit items-center gap-2 rounded-lg border border-geek-accent/30 bg-geek-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-geek-accent">
+          Catalogo vivo
+        </span>
+        <h1 class="text-4xl font-bold leading-tight text-white md:text-5xl">Universos</h1>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-geek-text-secondary md:text-lg">
+          Navega sagas, mundos, cronologias y comunidades editoriales. Cada universo concentra articulos,
+          personajes, teorias y guias para construir conocimiento compartido.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a
+            href={ROUTES.EXPLORE}
+            class="inline-flex h-11 items-center gap-2 rounded-lg bg-geek-accent-hover px-5 text-sm font-bold text-white transition-colors hover:bg-geek-accent focus-visible:ring-2 focus-visible:ring-geek-accent"
+          >
+            Explorar contenido
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          <a
+            href={ROUTES.CREATE_ARTICLE}
+            class="inline-flex h-11 items-center gap-2 rounded-lg border border-geek-border bg-geek-dark-secondary/80 px-5 text-sm font-semibold text-geek-text transition-colors hover:border-geek-accent/70 hover:bg-geek-dark-tertiary focus-visible:ring-2 focus-visible:ring-geek-accent"
+          >
+            Crear articulo
+          </a>
+        </div>
+      </div>
+
+      <div class="self-end rounded-lg border border-geek-border bg-geek-dark/72 p-4 backdrop-blur">
+        <div class="flex items-center gap-3">
+          <img src={featured.coverImage} alt={featured.name} class="h-16 w-16 rounded-lg object-cover" />
+          <div class="min-w-0">
+            <p class="text-xs uppercase tracking-wide text-geek-text-secondary">En foco</p>
+            <h2 class="truncate text-lg font-bold text-geek-text">{featured.name}</h2>
+            <p class="text-sm text-geek-accent">{featured.momentum}</p>
+          </div>
+        </div>
+        <div class="mt-4 grid grid-cols-3 gap-2">
+          <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/80 p-3">
+            <span class="block text-lg font-bold text-geek-text">{universes.length}</span>
+            <span class="text-[11px] uppercase tracking-wide text-geek-text-secondary">Universos</span>
+          </div>
+          <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/80 p-3">
+            <span class="block text-lg font-bold text-geek-text">{totals.articles.toLocaleString('es-ES')}</span>
+            <span class="text-[11px] uppercase tracking-wide text-geek-text-secondary">Articulos</span>
+          </div>
+          <div class="rounded-lg border border-geek-border bg-geek-dark-secondary/80 p-3">
+            <span class="block text-lg font-bold text-geek-text">{totals.characters.toLocaleString('es-ES')}</span>
+            <span class="text-[11px] uppercase tracking-wide text-geek-text-secondary">Personajes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-6 grid gap-3 md:grid-cols-5" aria-label="Categorias destacadas">
+    {categoryHighlights.map((category) => (
+      <a
+        href={`${ROUTES.EXPLORE}?categoria=${category.value}`}
+        class="rounded-lg border border-geek-border bg-geek-dark-secondary/70 p-4 transition-colors hover:border-geek-accent/60 hover:bg-geek-dark-secondary"
+      >
+        <span class="block text-sm font-bold text-geek-text">{category.label}</span>
+        <span class="mt-1 block text-xs text-geek-text-secondary">{category.description}</span>
+        <span class="mt-3 inline-flex rounded-md bg-geek-accent/10 px-2 py-1 text-xs font-semibold text-geek-accent">
+          {category.count} universos
+        </span>
+      </a>
+    ))}
+  </section>
+
+  <div class="mt-8">
+    <UniverseBrowser universes={universes} client:load />
+  </div>
+</MainLayout>
